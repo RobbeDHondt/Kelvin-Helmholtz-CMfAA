@@ -2,7 +2,13 @@
 
 # FORTRAN
 ## `mod_usr.t` after processing with VACPP
-#*.f
+mod_usr.f
+amrvac
+makefile
+*.mod
+*.log
+*.dat
+*.vtu
 
 # LATEX
 ## Core latex/pdflatex auxiliary files:
