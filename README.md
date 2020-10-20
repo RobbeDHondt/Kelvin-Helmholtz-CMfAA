@@ -6,7 +6,13 @@ Project description:
 ## TODO
 - [ ] Reproduce some figures from the paper (assuming incompressible is easier than compressible)
     - [ ] Translate the problem statement in [2.1](#2.1-Problem-statement) into a `.par` parameter file
-    - [ ] Translate initial conditions into the `mod_usr.t` file
+        - Domain [0,1]² --> `&meshlist, xprobmin/max`
+        - Periodic  $x = 0$, $x = 1$ boundary conditions --> `&boundlist, typeboundary1='periodic'`
+        - Slip-free $y = 0$, $y = 1$ boundary conditions --> `&boundlist, typeboundary2='special'`
+        - Maximal time $\bar t = 400$ (with a time unit of $\delta_0 / u_\infty = 1/28$), i.e. $t = 400/28 = 14.3$ --> `&stoplist, time_max=14.3`
+    - [ ] Translate initial & boundary conditions into the `mod_usr.t` file
+        - Special boundary conditions `kh_boundaries`: done together with Jack
+        - Initial conditions `kh_init`
     - [ ] Make a script to produce the quantities of interest from simulation output (palinstrophy seems to be the most important one) (maybe also consider numerical dissipation in 5.4)
 - [ ] Run compressible cases of the simulations
 - [ ] Make a presentation (for 9 / 16 December)
