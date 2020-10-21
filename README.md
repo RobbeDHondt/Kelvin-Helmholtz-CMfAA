@@ -13,7 +13,7 @@ Project description:
     - [ ] Translate initial & boundary conditions into the `mod_usr.t` file
         - Special boundary conditions `kh_boundaries`: done together with Jack
         - Initial conditions `kh_init`
-    - [ ] Make a script to produce the quantities of interest from simulation output (palinstrophy seems to be the most important one) (maybe also consider numerical dissipation in 5.4)
+    - [ ] Make a script to produce the quantities of interest from simulation output (palinstrophy seems to be the most important one) (maybe also consider numerical dissipation in 5.4) -> amrvac way to do so http://amrvac.org/md_doc_analysis.html
 - [ ] Run compressible cases of the simulations
 - [ ] Make a presentation (for 9 / 16 December)
 
