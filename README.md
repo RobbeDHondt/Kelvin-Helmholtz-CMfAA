@@ -3,6 +3,20 @@
 Project description:
 > This paper discusses some aspects of 2D simulations of the Kelvin-Helmholtz instability. Note that the simulations mentioned here are incompressible, while you should run compressible cases. Use the paper to initiate your own simulations, and to make contact with the paper results.
 
+Running the stuff in `SimCode` (where you can replace "4" by the number of processors you want to use)
+```bash
+# One time
+cd SimCode
+mkdir SimData
+$AMRVAC_DIR/setup.pl -d=2
+
+# Each time mod_usr.t is updated
+make -j 4
+
+# Each simulation
+mpirun -np 4 ./amrvac -i test.par
+```
+
 ## TODO
 - [ ] Reproduce some figures from the paper (assuming incompressible is easier than compressible)
     - [ ] Translate the problem statement in [2.1](#2.1-Problem-statement) into a `.par` parameter file
@@ -13,7 +27,10 @@ Project description:
     - [ ] Translate initial & boundary conditions into the `mod_usr.t` file
         - Special boundary conditions `kh_boundaries`: done together with Jack
         - Initial conditions `kh_init`
-    - [ ] Make a script to produce the quantities of interest from simulation output (palinstrophy seems to be the most important one) (maybe also consider numerical dissipation in 5.4)
+    - [ ] Calculate the quantities of interest from simulation output 
+        - See [here](http://amrvac.org/md_doc_analysis.html) how to integrate this in the code
+        - Palinstrophy seems to be the most important one
+        - Maybe also consider numerical dissipation in 5.4
 - [ ] Run compressible cases of the simulations
 - [ ] Make a presentation (for 9 / 16 December)
 
