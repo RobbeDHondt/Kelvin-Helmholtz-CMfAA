@@ -14,7 +14,7 @@
    itsave(1,1)     = 0
    itsave(1,2)     = 0
    dtsave_log       = 1.0d0
-   dtsave_dat       = 1.0d0
+   dtsave_dat       = 0.1d0
  /
 
  &stoplist
@@ -41,7 +41,7 @@
  /
 
  &meshlist
-   refine_max_level   = 1
+   refine_max_level   = 4
    block_nx1          = 10
    block_nx2          = 10
    domain_nx1         = 50
