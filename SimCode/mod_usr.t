@@ -49,7 +49,7 @@ contains
 
     ! Initial vertical momentum
     w(ixG^S,mom(2)) = cn * uinf * exp(-((x(ixG^S,2)-0.5)/delta0)**2) &
-        * (8*dpi*sin(8*dpi*x(ixG^S,1)) + 20*dpi*sin(20*dpi*x(ixG^S,1)))
+        * (8.0d0*dpi*sin(8*dpi*x(ixG^S,1)) + 20.0d0*dpi*sin(20*dpi*x(ixG^S,1)))
 
     call hd_to_conserved(ixG^L,ix^L,w,x)
   end subroutine kh_init
