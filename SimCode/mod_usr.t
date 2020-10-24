@@ -70,6 +70,8 @@ contains
         w(ixOmin1:ixOmax1, ixOmin2:ixOmax2, mom(2)) = &
             -w(ixOmin1:ixOmax1, ixOmax2+nghostcells:ixOmax2+1:-1, mom(2)) &
             / w(ixOmin1:ixOmax1, ixOmax2+nghostcells:ixOmax2+1:-1, rho_)
+        ! density: wall
+        w(ixO^S,rho_)=rho
     case(4)
         ! Top boundary: Free-slip
         w(ixOmin1:ixOmax1, ixOmin2:ixOmax2, mom(1)) = &
@@ -78,6 +80,8 @@ contains
         w(ixOmin1:ixOmax1, ixOmin2:ixOmax2, mom(2)) = &
             -w(ixOmin1:ixOmax1, ixOmin2-1:ixOmin2-nghostcells:-1, mom(2)) &
             / w(ixOmin1:ixOmax1, ixOmin2-1:ixOmin2-nghostcells:-1, rho_)
+        ! density: wall
+        w(ixO^S,rho_)=rho
     case default
        call mpistop("Special boundary is not defined for this region")
     end select
