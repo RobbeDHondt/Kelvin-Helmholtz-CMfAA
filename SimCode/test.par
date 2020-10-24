@@ -41,11 +41,11 @@
  /
 
  &meshlist
-   refine_max_level   = 4
+   refine_max_level   = 3
    block_nx1          = 10
    block_nx2          = 10
-   domain_nx1         = 50
-   domain_nx2         = 50
+   domain_nx1         = 65
+   domain_nx2         = 65
    xprobmin1       = 0.0d0
    xprobmax1       = 1.0d0
    xprobmin2       = 0.0d0
