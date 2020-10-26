@@ -16,7 +16,7 @@ contains
     integer, intent(in)             :: ixG^L, ix^L
     double precision, intent(in)    :: x(ixG^S,1:ndim) ! The coordinates
     double precision, intent(inout) :: w(ixG^S,1:nw)   ! The variables (rho, momentum, pressure)
-    double precision :: rho, pint, uinf, delta0, cn    ! Problem parameters
+    double precision :: rho, uinf, delta0, cn          ! Problem parameters
     logical          :: first = .true.
 
     ! ==================
@@ -24,9 +24,6 @@ contains
     ! ==================
     ! Value of the density field (which is uniform)
     rho = 1.0d0
-
-    ! Pressure at the interface (took this from `amrvac/tests/hd/Kelvin_Helmholtz_2D/mod_usr.t`)
-    pint = 2.5d0
 
     ! Some parameters from the paper
     uinf = 1.0
@@ -38,9 +35,6 @@ contains
     ! ==================
     ! Initial density field
     w(ixG^S, rho_) = rho
-
-    ! Initial pressure field
-    w(ixG^S,p_) = pint
 
     ! Initial horizontal momentum
     w(ixG^S,mom(1)) = uinf * tanh((2.0d0*x(ixG^S,2)-1.0d0)/delta0) &
@@ -60,6 +54,10 @@ contains
     double precision, intent(in) :: qt, x(ixI^S,1:ndim)
     double precision, intent(inout) :: w(ixI^S,1:nw)
     integer :: ix^D
+    double precision :: rho
+
+    ! Value for the Dirichlet boundary
+    rho = 1.0d0
 
     select case(iB)
     case(3)

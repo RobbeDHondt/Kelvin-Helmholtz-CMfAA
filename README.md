@@ -3,7 +3,7 @@
 Project description:
 > This paper discusses some aspects of 2D simulations of the Kelvin-Helmholtz instability. Note that the simulations mentioned here are incompressible, while you should run compressible cases. Use the paper to initiate your own simulations, and to make contact with the paper results.
 
-Running the stuff in `SimCode` (where you can replace "4" by the number of processors you want to use)
+How to run the stuff in `SimCode` (where you can replace "4" by the number of processors you want to use):
 ```bash
 # One time
 cd SimCode
@@ -19,20 +19,23 @@ mpirun -np 4 ./amrvac -i test.par
 
 ## TODO
 - [ ] Reproduce some figures from the paper (assuming incompressible is easier than compressible)
-    - [ ] Translate the problem statement in [2.1](#2.1-Problem-statement) into a `.par` parameter file
-        - Domain [0,1]² --> `&meshlist, xprobmin/max`
-        - Periodic  $x = 0$, $x = 1$ boundary conditions --> `&boundlist, typeboundary1='periodic'`
-        - Slip-free $y = 0$, $y = 1$ boundary conditions --> `&boundlist, typeboundary2='special'`
-        - Maximal time $\bar t = 400$ (with a time unit of $\delta_0 / u_\infty = 1/28$), i.e. $t = 400/28 = 14.3$ --> `&stoplist, time_max=14.3`
-    - [ ] Translate initial & boundary conditions into the `mod_usr.t` file
-        - Special boundary conditions `kh_boundaries`: done together with Jack
-        - Initial conditions `kh_init`
+    - [x] Translate the problem statement in [2.1](#2.1-Problem-statement) into a `.par` parameter file (see the base file, [settings.par](./SimCode/settings.par))
+    - [x] Translate initial & boundary conditions into the `mod_usr.t` file (see the base file, [mod_usr.t](./SimCode/mod_usr.t))
+    - [ ] We also need to do some extra stuff with the vorticity, might want to check `amrvac/tests/hd/Karman_Vortex_2D` (there, the vorticity is also already being calculated, so might also be interesting for the following point)
     - [ ] Calculate the quantities of interest from simulation output 
         - See [here](http://amrvac.org/md_doc_analysis.html) how to integrate this in the code
         - Palinstrophy seems to be the most important one
-        - Maybe also consider numerical dissipation in 5.4
+        - Maybe also consider numerical dissipation in section 5.4 from the paper
+    - [ ] Read up on `&methodlist`, maybe make an overview below
 - [ ] Run compressible cases of the simulations
 - [ ] Make a presentation (for 9 / 16 December)
+
+## Notes
+### Overview of `&methodlist`
+- `time_stepper`
+- `flux_scheme`
+- `limiter`
+
 
 ---
 
