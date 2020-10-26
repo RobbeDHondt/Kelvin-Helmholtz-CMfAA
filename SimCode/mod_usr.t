@@ -43,13 +43,13 @@ contains
     w(ixG^S,p_) = pint
 
     ! Initial horizontal momentum
-    w(ixG^S,mom(1)) = uinf * tanh((2*x(ixG^S,2)-1)/delta0) &
-        + cn * uinf * (-(2*x(ixG^S,2)-1) / delta0**2) * exp(-((x(ixG^S,2)-0.5)/delta0)**2) &
-        * (cos(8*dpi*x(ixG^S,1)) + cos(20*dpi*x(ixG^S,1)))
+    w(ixG^S,mom(1)) = uinf * tanh((2.0d0*x(ixG^S,2)-1.0d0)/delta0) &
+        + cn * uinf * (-(2.0d0*x(ixG^S,2)-1.0d0) / delta0**2.0d0) * exp(-((x(ixG^S,2)-0.5)/delta0)**2.0d0) &
+        * (cos(8.0d0*dpi*x(ixG^S,1)) + cos(200d0*dpi*x(ixG^S,1)))
 
     ! Initial vertical momentum
-    w(ixG^S,mom(2)) = cn * uinf * exp(-((x(ixG^S,2)-0.5)/delta0)**2) &
-        * (8.0d0*dpi*sin(8*dpi*x(ixG^S,1)) + 20.0d0*dpi*sin(20*dpi*x(ixG^S,1)))
+    w(ixG^S,mom(2)) = cn * uinf * exp(-((x(ixG^S,2)-0.5)/delta0)**2.0d0) &
+        * (8.0d0*dpi*sin(8.0d0*dpi*x(ixG^S,1)) + 20.0d0*dpi*sin(20.0d0*dpi*x(ixG^S,1)))
 
     call hd_to_conserved(ixG^L,ix^L,w,x)
   end subroutine kh_init
