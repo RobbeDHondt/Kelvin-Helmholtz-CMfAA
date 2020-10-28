@@ -1,5 +1,6 @@
 module mod_usr
   use mod_hd
+  use mod_viscosity
   implicit none
 contains
 
