@@ -32,9 +32,25 @@
 /
 
 &methodlist
-    time_stepper = 'twostep'
-    flux_scheme  = 20*'hllc'
-    limiter      = 20*'cada3'
+    !! ===================
+    !! TIME DISCRETIZATION
+    !! Wiki: http://amrvac.org/md_doc_time_discretization.html
+    !! Timestepping schemes (see src/mod_advance.t for details)
+        !! time_stepper --> time_integrator
+        !! "onestep"    --> {"Forward_Euler", "IMEX_Euler", "IMEX_SP"}
+        !! "twostep"    --> {"Predictor_Corrector", "RK2_alfa", "ssprk2",
+        !!                   "IMEX_Midpoint", "IMEX_Trapezoidal"}
+        !! "threestep"  --> {"ssprk3", "RK3_BT", "IMEX_ARS3", "IMEX_232"}
+        !! "fourstep"   --> {"ssprk4", "rk4", "jameson"}
+        !! "fivestep"   --> {"ssprk5"}
+    time_stepper = 'fivestep'
+    time_integrator = 'ssprk5'
+
+    !! ====================
+    !! SPACE DISCRETIZATION
+    !! Wiki: http://amrvac.org/md_doc_discretization.html
+   flux_scheme     = 20*'hll'
+   limiter         = 20*'koren'
 /
 
 &boundlist
@@ -75,5 +91,6 @@
 &hd_list
     hd_energy 	 = F
     hd_viscosity = T
+    ! Adiabatic index
     hd_gamma	 = 1.6666666667d0
 /
