@@ -17,7 +17,7 @@
     autoconvert   = T
     convert_type  = 'vtuBmpi'
     saveprim      = T
-    ! nwauxio	  = [aantal extra output variabelen]
+    nwauxio	  = 1
 /
 
 &savelist

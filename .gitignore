@@ -4,6 +4,7 @@
 ## `mod_usr.t` after processing with VACPP
 mod_usr.f
 amrvac
+amrvac.exe
 makefile
 *.mod
 *.log

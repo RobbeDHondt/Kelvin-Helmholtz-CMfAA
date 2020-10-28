@@ -7,6 +7,8 @@ contains
   subroutine usr_init()
     usr_init_one_grid => kh_init
     usr_special_bc    => kh_boundaries
+    usr_aux_output     => specialvar_output
+    usr_add_aux_names  => specialvarnames_output
     call set_coordinate_system('Cartesian')
     call hd_activate()
   end subroutine usr_init
@@ -86,5 +88,46 @@ contains
 
     call hd_to_conserved(ixI^L,ixO^L,w,x)
   end subroutine kh_boundaries
+
+  subroutine specialvar_output(ixI^L,ixO^L,w,x,normconv)
+  ! this subroutine can be used in convert, to add auxiliary variables to the
+  ! converted output file, for further analysis using tecplot, paraview, ....
+  ! these auxiliary values need to be stored in the nw+1:nw+nwauxio slots
+  ! the array normconv can be filled in the (nw+1:nw+nwauxio) range with
+  ! corresponding normalization values (default value 1)
+    use mod_radiative_cooling
+    integer, intent(in)                :: ixI^L,ixO^L
+    double precision, intent(in)       :: x(ixI^S,1:ndim)
+    double precision                   :: w(ixI^S,nw+nwauxio)
+    double precision                   :: normconv(0:nw+nwauxio)
+
+    double precision :: drho(ixI^S),vrot(ixI^S),tmp(ixI^S) ! pth(ixI^S),gradrho(ixI^S),
+    ! double precision                   :: kk,grhomax,kk1
+    double precision :: wlocal(ixI^S,1:nw)
+    integer                            :: idims
+
+    wlocal(ixI^S,1:nw)=w(ixI^S,1:nw)
+
+    ! output vorticity
+    vrot(ixO^S)=zero
+    idims=1
+    tmp(ixI^S)=wlocal(ixI^S,mom(2))/wlocal(ixI^S,rho_)
+    call gradient(tmp,ixI^L,ixO^L,idims,drho)
+    vrot(ixO^S)=vrot(ixO^S)+drho(ixO^S)
+    idims=2
+    tmp(ixI^S)=wlocal(ixI^S,mom(1))/wlocal(ixI^S,rho_)
+    call gradient(tmp,ixI^L,ixO^L,idims,drho)
+    vrot(ixO^S)=vrot(ixO^S)-drho(ixO^S)
+    w(ixO^S,nw+1)=vrot(ixO^S)
+
+  end subroutine specialvar_output
+
+  subroutine specialvarnames_output(varnames)
+    ! newly added variables need to be concatenated with the w_names/primnames string
+    character(len=*) :: varnames
+
+    varnames='omega'
+
+  end subroutine specialvarnames_output
 
 end module mod_usr
