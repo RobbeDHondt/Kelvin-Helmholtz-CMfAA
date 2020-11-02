@@ -17,7 +17,7 @@
     autoconvert   = T
     convert_type  = 'vtuBmpi'
     saveprim      = T
-    nwauxio	  = 1
+    nwauxio	      = 1
 /
 
 &savelist
@@ -49,8 +49,8 @@
     !! ====================
     !! SPACE DISCRETIZATION
     !! Wiki: http://amrvac.org/md_doc_discretization.html
-   flux_scheme     = 20*'hll'
-   limiter         = 20*'koren'
+    flux_scheme     = 20*'hll'
+    limiter         = 20*'koren'
 /
 
 &boundlist

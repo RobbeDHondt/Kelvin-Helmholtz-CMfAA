@@ -8,8 +8,8 @@ contains
   subroutine usr_init()
     usr_init_one_grid => kh_init
     usr_special_bc    => kh_boundaries
-    usr_aux_output     => specialvar_output
-    usr_add_aux_names  => specialvarnames_output
+    usr_aux_output    => specialvar_output
+    usr_add_aux_names => specialvarnames_output
     call set_coordinate_system('Cartesian')
     call hd_activate()
   end subroutine usr_init
