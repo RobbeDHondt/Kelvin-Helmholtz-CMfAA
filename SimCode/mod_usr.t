@@ -102,7 +102,7 @@ contains
     double precision                   :: w(ixI^S,nw+nwauxio)
     double precision                   :: normconv(0:nw+nwauxio)
 
-    double precision :: drho(ixI^S),vrot(ixI^S),tmp(ixI^S) ! pth(ixI^S),gradrho(ixI^S),
+    double precision :: drho(ixI^S),vrot(ixI^S),tmp(ixI^S),enstr(ixI^S) ! pth(ixI^S),gradrho(ixI^S),
     ! double precision                   :: kk,grhomax,kk1
     double precision :: wlocal(ixI^S,1:nw)
     integer                            :: idims
@@ -111,15 +111,24 @@ contains
 
     ! output vorticity
     vrot(ixO^S)=zero
+    ! x-dimension
     idims=1
+    ! extract velocity
     tmp(ixI^S)=wlocal(ixI^S,mom(2))/wlocal(ixI^S,rho_)
+    ! calculate derivative in x-direction of tmp and store it in drho
     call gradient(tmp,ixI^L,ixO^L,idims,drho)
     vrot(ixO^S)=vrot(ixO^S)+drho(ixO^S)
+    ! analoguous as in x-direction
     idims=2
     tmp(ixI^S)=wlocal(ixI^S,mom(1))/wlocal(ixI^S,rho_)
     call gradient(tmp,ixI^L,ixO^L,idims,drho)
     vrot(ixO^S)=vrot(ixO^S)-drho(ixO^S)
     w(ixO^S,nw+1)=vrot(ixO^S)
+
+    ! output enstrophy
+    enstr(ixI^S) = zero
+    enstr(ixI^S) = 0.5d0*norm2(vrot(ixO^S)^2
+    w(ixO^S,nw+2) = enstr(ixO^S)
 
   end subroutine specialvar_output
 

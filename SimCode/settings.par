@@ -13,11 +13,11 @@
 !=====================================================
 
 &filelist
-    base_filename = 'SimData/kh_2d_'
+    base_filename = 'SimData/kh_2d(2)_'
     autoconvert   = T
     convert_type  = 'vtuBmpi'
     saveprim      = T
-    nwauxio	      = 1
+    nwauxio	  = 2
 /
 
 &savelist
@@ -91,6 +91,6 @@
 &hd_list
     hd_energy 	 = F
     hd_viscosity = T
-    ! Adiabatic index
-    hd_gamma	 = 1.6666666667d0
+    ! Adiabatic index => guess this is only necessary when solved for energy as well
+!    hd_gamma	 = 1.6666666667d0
 /
