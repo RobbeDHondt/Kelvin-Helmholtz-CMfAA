@@ -94,3 +94,7 @@
     ! Adiabatic index => guess this is only necessary when solved for energy as well
 !    hd_gamma	 = 1.6666666667d0
 /
+
+&vc_list
+   vc_mu        = 3.57d-4
+/
