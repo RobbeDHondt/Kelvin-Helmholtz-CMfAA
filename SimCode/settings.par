@@ -89,11 +89,24 @@
 /
 
 &hd_list
-    hd_energy 	 = F
+    hd_energy    = F
     hd_viscosity = T
     ! Adiabatic index => guess this is only necessary when solved for energy as well
 !    hd_gamma	 = 1.6666666667d0
 /
+
+!=============================================================
+! VISCOSITY
+! see amrvac/src/physics/mod_viscosity.t for more details
+! 
+! Reynolds number defined as Re = (rho_0*uinf*delta0)/vc_mu
+! (see mod_usr.t for the values of rho_0, uinf and delta0)
+!
+! So to obtain the paper's Reynolds numbers:
+! Re = 100     =>     vc_mu = 3.57d-4
+! Re = 1000    =>     vc_mu = 3.57d-5
+! Re = 10 000  =>     vc_mu = 3.57d-8
+!=============================================================
 
 &vc_list
    vc_mu        = 3.57d-4
