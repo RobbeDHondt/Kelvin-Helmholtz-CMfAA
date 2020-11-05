@@ -127,7 +127,7 @@ contains
 
     ! output enstrophy
     enstr(ixI^S) = zero
-    enstr(ixI^S) = 0.5d0*norm2(vrot(ixO^S)^2
+    enstr(ixI^S) = 0.5d0*norm2(vrot(ixO^S))**2
     w(ixO^S,nw+2) = enstr(ixO^S)
 
   end subroutine specialvar_output
