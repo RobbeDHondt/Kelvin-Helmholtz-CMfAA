@@ -136,7 +136,7 @@ contains
     ! newly added variables need to be concatenated with the w_names/primnames string
     character(len=*) :: varnames
 
-    varnames='omega'
+    varnames='omega enstrophy'
 
   end subroutine specialvarnames_output
 
