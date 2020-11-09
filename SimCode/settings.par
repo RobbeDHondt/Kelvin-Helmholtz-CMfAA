@@ -13,7 +13,7 @@
 !=====================================================
 
 &filelist
-    base_filename = 'SimData/kh_2d(2)_'
+    base_filename = 'SimData/kh_2d_fd_'
     autoconvert   = T
     convert_type  = 'vtuBmpi'
     saveprim      = T
@@ -49,8 +49,13 @@
     !! ====================
     !! SPACE DISCRETIZATION
     !! Wiki: http://amrvac.org/md_doc_discretization.html
-    flux_scheme     = 20*'hll'
-    limiter         = 20*'koren'
+    !! Scheme
+    flux_scheme = 20*'hll'
+    dimsplit    = T
+    !typepred1 should not really be set
+    limiter     = 20*'woodward'
+    typetvd     = 'roe'
+    !typeaverage = 'arithmetic'
 /
 
 &boundlist

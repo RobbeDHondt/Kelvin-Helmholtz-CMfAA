@@ -1,5 +1,8 @@
 .vscode
 
+# PYTHON
+*.npy
+
 # FORTRAN
 ## `mod_usr.t` after processing with VACPP
 mod_usr.f
