@@ -30,18 +30,14 @@ mpirun -np 4 ./amrvac -i test.par
 - [ ] Run compressible cases of the simulations
 - [ ] Make a presentation (for 9 / 16 December)
 
-## Notes
-### Overview of `&methodlist`
-- `time_stepper`
-- `flux_scheme`
-- `limiter`
+## MPI-AMRVAC notes
+### [Setting parameters](http://amrvac.org/md_doc_par.html)
+### [Numerical methods](http://amrvac.org/md_doc_methods.html)
+### [Slope limiters](http://amrvac.org/md_doc_limiter.html)
 
 
----
-
-Summary of the [reference paper](./schroeder2019reference.pdf):
-
-## On reference solutions and the sensitivity of the 2D Kelvin-Helmholtz instability problem
+## Reference paper notes
+Title: [*On reference solutions and the sensitivity of the 2D Kelvin-Helmholtz instability problem*](./schroeder2019reference.pdf)
 ### 1 Introduction
 Contributions of this paper:
 - Reference results for 2D Kelvin-Helmholtz up to t = 200
