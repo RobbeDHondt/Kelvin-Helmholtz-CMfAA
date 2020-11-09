@@ -3,6 +3,14 @@
 Project description:
 > This paper discusses some aspects of 2D simulations of the Kelvin-Helmholtz instability. Note that the simulations mentioned here are incompressible, while you should run compressible cases. Use the paper to initiate your own simulations, and to make contact with the paper results.
 
+Table of contents
+- [How to run](#how-to-run)
+- [TODO](#todo)
+- [MPI-AMRVAC notes](#mpi-amrvac-notes)
+- [Reference paper notes](#reference-paper-notes)
+
+
+## How to run
 How to run the stuff in `SimCode` (where you can replace "4" by the number of processors you want to use):
 ```bash
 # One time
@@ -17,6 +25,7 @@ make -j 4
 mpirun -np 4 ./amrvac -i test.par
 ```
 
+
 ## TODO
 - [ ] Reproduce some figures from the paper (assuming incompressible is easier than compressible)
     - [x] Translate the problem statement in [2.1](#2.1-Problem-statement) into a `.par` parameter file (see the base file, [settings.par](./SimCode/settings.par))
@@ -29,6 +38,7 @@ mpirun -np 4 ./amrvac -i test.par
     - [ ] Read up on `&methodlist`, maybe make an overview below
 - [ ] Run compressible cases of the simulations
 - [ ] Make a presentation (for 9 / 16 December)
+
 
 ## MPI-AMRVAC notes
 ### [Setting parameters](http://amrvac.org/md_doc_par.html)
