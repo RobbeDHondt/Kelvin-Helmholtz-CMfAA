@@ -1,0 +1,71 @@
+! =======================================================
+! Trying to replicate the setup from the Kelvin-Helmholtz
+! simulation from lecture 8
+! =======================================================
+
+&filelist
+    base_filename = 'SimData/kh_2d_hll_'
+    saveprim      = T
+    nwauxio	      = 3
+    autoconvert   = T
+    convert_type  = 'vtuBmpi'
+/
+
+&savelist
+    itsave(1,1) = 0
+    itsave(1,2) = 0
+    dtsave_log  = 0.1d0
+    dtsave_dat  = 0.1d0
+/
+
+&stoplist
+    time_max = 20.0d0
+/
+
+&methodlist
+    time_stepper    = 'fivestep'
+    time_integrator = 'ssprk5'
+
+    flux_scheme = 20*'hll'
+    limiter     = 20*'mp5'
+/
+
+&boundlist
+    typeboundary_min1 = 3*'periodic'
+    typeboundary_max1 = 3*'periodic'
+    typeboundary_min2 = 3*'special'
+    typeboundary_max2 = 3*'special'
+/
+
+&meshlist
+    !! Adaptive mesh refinement list
+    refine_max_level = 3
+    block_nx1        = 16
+    block_nx2        = 16
+    domain_nx1       = 64
+    domain_nx2       = 64
+    !refine_threshold = ...
+    !derefine_ratio   = ...
+    !w_refine_weight  = ...
+    
+    !! Size of the physical domain (unit square)
+    xprobmin1 = 0.0d0
+    xprobmax1 = 1.0d0
+    xprobmin2 = 0.0d0
+    xprobmax2 = 1.0d0
+/
+
+&paramlist
+    slowsteps    = 10
+    courantpar   = 0.8d0
+    typecourant  = 'maxsum'
+/
+
+&hd_list
+    hd_energy    = F
+    hd_viscosity = T
+/
+
+&vc_list
+   vc_mu        = 3.57d-4
+/
