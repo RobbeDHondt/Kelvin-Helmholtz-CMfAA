@@ -61,6 +61,13 @@ methods. Hooray!
 
 When using the 'tvdmu' flux-scheme, we should also set 'typeentropy'.
 
+### Possible settings to play with
+
+* spin the other way around
+* change pressure
+* change velocity top, bottom
+* sine pattern
+
 ### Grid refinement
 
 It is possible to do the refinement according to the vorticity. Now it is only based on the four (or
