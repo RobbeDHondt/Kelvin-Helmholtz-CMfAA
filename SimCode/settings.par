@@ -43,8 +43,8 @@
         !! "threestep"  --> {"ssprk3", "RK3_BT", "IMEX_ARS3", "IMEX_232"}
         !! "fourstep"   --> {"ssprk4", "rk4", "jameson"}
         !! "fivestep"   --> {"ssprk5"}
-    time_stepper = 'fivestep'
-    time_integrator = 'ssprk5'
+    time_stepper = 'threestep'
+    time_integrator = 'ssprk3'
 
     !! ====================
     !! SPACE DISCRETIZATION
@@ -53,8 +53,11 @@
     flux_scheme = 20*'hll'
     dimsplit    = T
     !typepred1 should not really be set
+    !! 20 = nlevelshi; the maximum number of levels in the grid refinement
     limiter     = 20*'woodward'
     typetvd     = 'roe'
+    !! No idea what it does
+    !! options: {"default", "roe", "arithmetic"}
     !typeaverage = 'arithmetic'
 /
 
@@ -110,9 +113,9 @@
 ! So to obtain the paper's Reynolds numbers:
 ! Re = 100     =>     vc_mu = 3.57d-4
 ! Re = 1000    =>     vc_mu = 3.57d-5
-! Re = 10 000  =>     vc_mu = 3.57d-8
+! Re = 10 000  =>     vc_mu = 3.57d-6
 !=============================================================
 
 &vc_list
-   vc_mu        = 3.57d-4
+   vc_mu        = 3.57d-6
 /
