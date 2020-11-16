@@ -48,7 +48,7 @@ contains
     ! Initial horizontal momentum
     w(ixG^S,mom(1)) = uinf * tanh((2.0d0*x(ixG^S,2)-1.0d0)/delta0) &
         + cn * uinf * (-(2.0d0*x(ixG^S,2)-1.0d0) / delta0**2.0d0) * exp(-((x(ixG^S,2)-0.5)/delta0)**2.0d0) &
-        * (cos(8.0d0*dpi*x(ixG^S,1)) + cos(200d0*dpi*x(ixG^S,1)))
+        * (cos(8.0d0*dpi*x(ixG^S,1)) + cos(20.0d0*dpi*x(ixG^S,1)))
 
     ! Initial vertical momentum
     w(ixG^S,mom(2)) = cn * uinf * exp(-((x(ixG^S,2)-0.5)/delta0)**2.0d0) &
