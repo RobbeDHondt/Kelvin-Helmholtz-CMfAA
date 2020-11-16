@@ -4,25 +4,22 @@
 
 ### Finite differences
 
-Investigated with `typeaverage = {"default", "roe", "arythmetic"}`. No difference between the three types of average visible in the simulations.
-
+Investigated with `typeaverage = {"default", "roe", "arithmetic"}`. No difference between the three types of average visible in the simulations.
 
 ### TVDLF
 
-+ limiter 'ppm': yields 4 vortices
++ limiter `ppm`: yields 4 vortices
 
-## Questions for Jack
 
-* Error with typeaverage
+## Meeting Jack 11/11/2020
+
+### Preparation: some questions
+* Error with `typeaverage`
 * How to choose best discretization method, slope limiter?
   => suggestion: look at behaviour of enstrophy
 * Show results for different Reynolds 
-* Show attempt to reproduce simulation lecture yesterday
+* Show attempt to reproduce simulation lecture yesterday (slide 23/52; density top 1.5 bottom 1, using `hll` and `mp5` and `ssprk5`, low Mach number flow)
 * doublecheck: do we have the right settings? (compressible, not solving for energy...) 
-
-## Report of talk with Jack
-
-11th of november 2020
 
 ### On the setting of our problem
 
@@ -31,11 +28,21 @@ So it's hard to track what the benchmark solution is. One way to do so, is to ru
 and check which one runs the longest (and some other variables?) to set one scheme as a benchmark to
 compare against. 
 
+**(Robbe)** The way I understand it, is that we search for the "least artificial" flux scheme (on the AMRVAC site) and combine it with a high order timestepper (probably `fivestep ssprk5`) and a highly accurate slope limiter, and take the results of this simulation (possibly with a small timestep & gridsize) as benchmark result.
+However, we don't *need* to make a benchmark result, we can also just compare a bunch of methods with one another.
+
 It's normal that at lower Reynolds number, less vortices are formed than the setup predicts. 
+
+### On numerical artefacts
 
 When we solve the incompressible case, some strange lines pop up in our visualisation of the vorticity.
 This is a numerical artefact: it has something to do with sound speed and energy dissipation, but I did
 not get it entirely so I hope Jack can give us some resource on that. 
+
+**(Robbe)** What I have written about these strange lines:
+- They are shocks (resulting from speeds higher than the sound speed). This corresponds to energy leaking from the system (?), and is therefore non-physical behavior. 
+- In the incompressible case (no energy equation), you normally can't go above the sound speed (i.e. you can't add pressure to the system).
+- Making the problem compressible (i.e. adding the energy equation) removes the issue of the sound speed.
 
 The reason why the paper does not show these artefacts, has to do with the fact that they solve the problem
 with a program specifically written for this problem. So they have a specific way to handle velocity which
@@ -47,19 +54,22 @@ Anyway, if we want to solve the compressible case, the only thing we should do i
 in settings.par. When doing so, we should set the pressure in the mod_usr.t file. It can be done pretty
 similar as to the test-problem in the amrvac-files (Dirichlet boundary conditions, uniform (?) initial 
 condition).
+**(Robbe)** Yeah, I also understood uniform pressure (using the `pint` variable as before) and Dirichlet BC.
 
 ### On discretization methods
 
-Jack showed us a pretty nice simulation, which was made with tvdlf and woodward slope limiter. This
+Jack showed us a pretty nice simulation, which was made with `tvdlf` and `woodward` slope limiter. This
 combination would be the most stable for computations, yet not necessarily the most accurate or correct
 one. Yet as said before, it's hard to know what's accurate, except when you compare with physical experiments.
 
-'minmod' is the most diffusive slope limiter. 'ppm' on the other hand is 5th order in space, that's very 
-sharp. Make sure that the order of your method for space discretization is not lower than the order of 
+`minmod` is the most diffusive slope limiter. 
+`ppm` (piecewise power method) on the other hand is 5th order in space, that's very sharp. 
+Make sure that the order of your method for space discretization is not lower than the order of 
 the method for time discretization. Apart from that, you can mess around as you like by combining different
 methods. Hooray!
 
-When using the 'tvdmu' flux-scheme, we should also set 'typeentropy'.
+When using the `tvdmu` flux-scheme, we should also set `typeentropy`.
+He also said something about an `entropyfix`.
 
 ### Possible settings to play with
 
@@ -71,7 +81,7 @@ When using the 'tvdmu' flux-scheme, we should also set 'typeentropy'.
 ### Grid refinement
 
 It is possible to do the refinement according to the vorticity. Now it is only based on the four (or
-three if we turn of energy equations) default variables, which is 'rho', 'v' (two dimensions) and 'p'.
+three if we turn off energy equations) default variables, which is 'rho', 'v' (two dimensions) and 'p'.
 
 ### Visualisation
 
