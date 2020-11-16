@@ -1,17 +1,23 @@
 module mod_usr
   use mod_hd
   use mod_viscosity
+
   implicit none
+
+  integer :: omega_, grad_omega_
 contains
 
   !! Some AMRVAC bookkeeping
   subroutine usr_init()
     usr_init_one_grid => kh_init
     usr_special_bc    => kh_boundaries
-    usr_aux_output    => specialvar_output
-    usr_add_aux_names => specialvarnames_output
+    usr_modify_output => set_output_vars
+
     call set_coordinate_system('Cartesian')
     call hd_activate()
+
+    omega_      = var_set_extravar("omega", "omega")
+    grad_omega_ = var_set_extravar("grad_omega", "grad_omega")
   end subroutine usr_init
 
   !! Setting the initial condition
@@ -90,54 +96,47 @@ contains
     call hd_to_conserved(ixI^L,ixO^L,w,x)
   end subroutine kh_boundaries
 
-  subroutine specialvar_output(ixI^L,ixO^L,w,x,normconv)
-  ! this subroutine can be used in convert, to add auxiliary variables to the
-  ! converted output file, for further analysis using tecplot, paraview, ....
-  ! these auxiliary values need to be stored in the nw+1:nw+nwauxio slots
-  ! the array normconv can be filled in the (nw+1:nw+nwauxio) range with
-  ! corresponding normalization values (default value 1)
-    use mod_radiative_cooling
-    integer, intent(in)                :: ixI^L,ixO^L
-    double precision, intent(in)       :: x(ixI^S,1:ndim)
-    double precision                   :: w(ixI^S,nw+nwauxio)
-    double precision                   :: normconv(0:nw+nwauxio)
+  subroutine set_output_vars(ixI^L,ixO^L,qt,w,x)
+    use mod_global_parameters
+    use mod_radiative_cooling    
+    integer, intent(in)             :: ixI^L,ixO^L
+    double precision, intent(in)    :: qt, x(ixI^S,1:ndim)
+    double precision, intent(inout) :: w(ixI^S,nw)
 
-    double precision :: drho(ixI^S),vrot(ixI^S),tmp(ixI^S),enstr(ixI^S) ! pth(ixI^S),gradrho(ixI^S),
-    ! double precision                   :: kk,grhomax,kk1
-    double precision :: wlocal(ixI^S,1:nw)
-    integer                            :: idims
+    double precision :: drho(ixI^S), vrot(ixI^S), tmp(ixI^S)
+    double precision :: wlocal(ixI^S,1:nw), domega(ixI^S)
+    integer          :: idims
 
-    wlocal(ixI^S,1:nw)=w(ixI^S,1:nw)
+    ! Make a copy for local computations
+    wlocal(ixI^S,1:nw) = w(ixI^S,1:nw)
 
-    ! output vorticity
-    vrot(ixO^S)=zero
-    ! x-dimension
-    idims=1
-    ! extract velocity
-    tmp(ixI^S)=wlocal(ixI^S,mom(2))/wlocal(ixI^S,rho_)
-    ! calculate derivative in x-direction of tmp and store it in drho
-    call gradient(tmp,ixI^L,ixO^L,idims,drho)
-    vrot(ixO^S)=vrot(ixO^S)+drho(ixO^S)
-    ! analoguous as in x-direction
-    idims=2
-    tmp(ixI^S)=wlocal(ixI^S,mom(1))/wlocal(ixI^S,rho_)
-    call gradient(tmp,ixI^L,ixO^L,idims,drho)
-    vrot(ixO^S)=vrot(ixO^S)-drho(ixO^S)
-    w(ixO^S,nw+1)=vrot(ixO^S)
+    ! ================
+    ! Output vorticity
+    ! ================
+    vrot(ixO^S) = zero
 
-    ! output enstrophy
-    enstr(ixO^S) = zero
-    enstr(ixO^S) = 0.5d0*norm2(vrot(ixO^S))**2
-    w(ixO^S,nw+2) = enstr(ixO^S)
+    ! x-direction: compute d(v_y)/dx
+    idims = 1
+    tmp(ixI^S) = wlocal(ixI^S,mom(2)) / wlocal(ixI^S,rho_) ! = velocity v_y
+    call gradient(tmp, ixI^L, ixO^L, idims, drho) ! drho = d(tmp)/dx
+    vrot(ixO^S) = vrot(ixO^S) + drho(ixO^S)
 
-  end subroutine specialvar_output
+    ! y-direction: compute d(v_x)/dy
+    idims = 2
+    tmp(ixI^S) = wlocal(ixI^S,mom(1)) / wlocal(ixI^S,rho_) ! = velocity v_x
+    call gradient(tmp, ixI^L, ixO^L, idims, drho) ! drho = d(tmp)/dy
+    vrot(ixO^S) = vrot(ixO^S) - drho(ixO^S)
 
-  subroutine specialvarnames_output(varnames)
-    ! newly added variables need to be concatenated with the w_names/primnames string
-    character(len=*) :: varnames
+    ! Write the result: omega = d(v_y)/dx - d(v_x)/dy
+    w(ixO^S,omega_) = vrot(ixO^S)
 
-    varnames='omega enstrophy'
+    ! ======================
+    ! Output grad(vorticity)
+    ! ======================
+    tmp(ixI^S) = vrot(ixI^S)
+    call gradient(tmp, ixI^L, ixO^L, idims, domega)
+    w(ixO^S, grad_omega_) = domega(ixO^S)
 
-  end subroutine specialvarnames_output
+  end subroutine set_output_vars 
 
 end module mod_usr

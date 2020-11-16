@@ -13,11 +13,10 @@
 !=====================================================
 
 &filelist
-    base_filename = 'SimData/kh_2d_fd_'
+    base_filename = 'SimData/kh2d_SETUP-NAME_'
     autoconvert   = T
     convert_type  = 'vtuBmpi'
     saveprim      = T
-    nwauxio	  = 2
 /
 
 &savelist

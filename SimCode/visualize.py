@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-data_dir = "SimData/"
+data_dir = "./SimData/"
 out_dir  = "../Animations/"
 
 def animate(basename="kh_2d_", outname=None):
