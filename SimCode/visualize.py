@@ -11,38 +11,51 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 data_dir = "./SimData/"
 out_dir  = "../Animations/"
 
-def animate(basename="kh_2d_", outname=None):
+def animate(basename="kh_2d_", outname=None, ext=".mp4", quantity="omega"):
+    """Produces an animated contourplot of the simulation with given name.
+    
+    @param basename: Base filename, given in the .par file by &filelist, base_filename.
+    @param outname : Name of the movie to be produced.
+    @param ext     : Output format, depends on support of your VideoWriter (usually mp4 is OK).
+    @param quantity: The parameter to visualize (any of the primitive or conserved variables,
+        omega, grad_omega).
+    """
+    # No name given ==> produce one yourself
     if outname is None:
-        outname = basename + ".mp4"
+        outname = basename + ext
+    # Make sure extension is added to the filename
+    if outname[-len(ext):] != ext:
+        outname += ext
 
+    # Make figure axes and colorbar
     fig, ax = plt.subplots()
     div = make_axes_locatable(ax)
     cax = div.append_axes('right', '5%', '5%')
    
     def update(iframe):
+        """Updating function for the MATLAB AnimationWriter."""
         ax.clear()
 
-        # Extract the current frame
+        # Extract the data for the current frame
         filename = data_dir + basename + f"{iframe:04d}.dat"
         ds = apt.load_datfile(filename)
         ad = ds.load_all_data(regriddir=data_dir+"regridded_data/")
         xx = ds.get_coordinate_arrays()[0]
         yy = ds.get_coordinate_arrays()[1]
-        rho = ad['rho']
-        # omega = ad['omega'] # Do auxiliary variables not make it to the .dat file?
+        zz = ad[quantity].transpose()
         time = ds.get_time()
 
         # Make a contourplot
-        contourplot = ax.contourf(xx, yy, rho) #vmin=minval, vmax=maxval, extend='both', cmap='Oranges', levels=200)
+        contourplot = ax.contourf(xx, yy, zz) #vmin=minval, vmax=maxval, extend='both', cmap='Oranges', levels=200)
         ax.set_xlabel(r'$x$')
         ax.set_ylabel(r'$y$')
         ax.set_xlim([0.0, 1.0]) # Unit square
         ax.set_ylim([0.0, 1.0]) # Unit square
-        ax.set_title(f"Density at time {time:.2f}")
-        # Colorbar
+        ax.set_title(f"{quantity} at time {time:.2f}")
+
+        # Update the colorbar
         cax.cla()
         fig.colorbar(contourplot, cax=cax)
-        plt.draw()
 
     nframes = len(glob.glob1(data_dir, basename+"*.dat"))
     anim = animation.FuncAnimation(fig, update, frames=nframes, repeat=False)
@@ -69,6 +82,7 @@ def logfile_reader():
 # animate("kh_2d_fd_", "kh_2d_fd.mp4")
 # animate("kh_2d_tvd_","test.mp4")
 # yt_test()
+animate("test_dat_", "temp")
 
 if len(sys.argv) > 1:
     animate(sys.argv[1])
