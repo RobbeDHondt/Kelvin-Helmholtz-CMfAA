@@ -31,7 +31,7 @@ compare against.
 **(Robbe)** The way I understand it, is that we search for the "least artificial" flux scheme (on the AMRVAC site) and combine it with a high order timestepper (probably `fivestep ssprk5`) and a highly accurate slope limiter, and take the results of this simulation (possibly with a small timestep & gridsize) as benchmark result.
 However, we don't *need* to make a benchmark result, we can also just compare a bunch of methods with one another.
 
-**(Daniela)** From what I understood, there is no right results, therefore there is not a unique and right way to handle this. All depends on how we want to set our simulation, namely we can choose to have a benchmark and to compare the other simulation with, or we can show different simulations showing the differences between them. In case we want to have a benchmark, the *safest* way is probably to choose the most stable scheme. 
+**(Daniela)** From what I understood, there is no right results, therefore there is not a unique and right way to handle this. All depends on how we want to set our presentation, namely we can choose to have a benchmark and to compare the other simulation with, or we can show different simulations showing the differences between them. In case we want to have a benchmark, the *safest* way is probably to choose the most stable scheme. 
 
 It's normal that at lower Reynolds number, less vortices are formed than the setup predicts. 
 
