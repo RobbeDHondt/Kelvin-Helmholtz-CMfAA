@@ -31,6 +31,8 @@ compare against.
 **(Robbe)** The way I understand it, is that we search for the "least artificial" flux scheme (on the AMRVAC site) and combine it with a high order timestepper (probably `fivestep ssprk5`) and a highly accurate slope limiter, and take the results of this simulation (possibly with a small timestep & gridsize) as benchmark result.
 However, we don't *need* to make a benchmark result, we can also just compare a bunch of methods with one another.
 
+**(Daniela)** From what I understood, there is no right results, therefore there is not a unique and right way to handle this. All depends on how we want to set our simulation, namely we can choose to have a benchmark and to compare the other simulation with, or we can show different simulations showing the differences between them. In case we want to have a benchmark, the *safest* way is probably to choose the most stable scheme. 
+
 It's normal that at lower Reynolds number, less vortices are formed than the setup predicts. 
 
 ### On numerical artefacts
@@ -44,11 +46,14 @@ not get it entirely so I hope Jack can give us some resource on that.
 - In the incompressible case (no energy equation), you normally can't go above the sound speed (i.e. you can't add pressure to the system).
 - Making the problem compressible (i.e. adding the energy equation) removes the issue of the sound speed.
 
+**(Daniela)** I wrote down more or less the same thing. In the paper they have an approach which is able to better handle velocity and better resolve shocks. The difference between compressible and incompressible lies in the fact that in compressible cases, when a shock is formed, the system responds with and increase of density and pressure. This is physically not possible for incompressible cases and therefore we end up leaking energy from the system. 
+
 The reason why the paper does not show these artefacts, has to do with the fact that they solve the problem
 with a program specifically written for this problem. So they have a specific way to handle velocity which
 makes the solving more accurate. AMRVAC on the other hand is a toolbox with predefined equations and 
 modules to handle them, which makes it hard for the incompressible setting to be solved taking into
 account all that may behave bad.
+**(Daniela)** If I dod not misinterpret Jack's explanation, I think that the difference in the approach involves also the initial conditions. Basically, AMRVAC first solve the equation in a general form that can be applied to different system, and then it solve the specific problem taking into account all the parameters given in the .par file. In the paper, instead, they solved the equation taking into account all the parameters since the beginning, modifying the scheme step by step. 
 
 Anyway, if we want to solve the compressible case, the only thing we should do is turn on the energy equation
 in settings.par. When doing so, we should set the pressure in the mod_usr.t file. It can be done pretty
