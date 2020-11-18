@@ -53,6 +53,7 @@ with a program specifically written for this problem. So they have a specific wa
 makes the solving more accurate. AMRVAC on the other hand is a toolbox with predefined equations and 
 modules to handle them, which makes it hard for the incompressible setting to be solved taking into
 account all that may behave bad.
+
 **(Daniela)** If I dod not misinterpret Jack's explanation, I think that the difference in the approach involves also the initial conditions. Basically, AMRVAC first solve the equation in a general form that can be applied to different system, and then it solve the specific problem taking into account all the parameters given in the .par file. In the paper, instead, they solved the equation taking into account all the parameters since the beginning, modifying the scheme step by step. 
 
 Anyway, if we want to solve the compressible case, the only thing we should do is turn on the energy equation
