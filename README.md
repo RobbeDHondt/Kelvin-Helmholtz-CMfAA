@@ -27,16 +27,24 @@ mpirun -np 4 ./amrvac -i test.par
 
 
 ## TODO
-- [ ] Reproduce some figures from the paper (assuming incompressible is easier than compressible)
+- [ ] Reproduce some figures from the paper (assuming incompressible is easier than compressible HAH prank)
     - [x] Translate the problem statement in [2.1](#2.1-Problem-statement) into a `.par` parameter file (see the base file, [settings.par](./SimCode/settings.par))
     - [x] Translate initial & boundary conditions into the `mod_usr.t` file (see the base file, [mod_usr.t](./SimCode/mod_usr.t))
     - [x] We also need to do some extra stuff with the vorticity, might want to check `amrvac/tests/hd/Karman_Vortex_2D` (there, the vorticity is also already being calculated, so might also be interesting for the following point)
     - [ ] Calculate the quantities of interest from simulation output 
-        - See [here](http://amrvac.org/md_doc_mpiamrvac_nw.html) how to integrate this in the code
+        - [x] See [here](http://amrvac.org/md_doc_mpiamrvac_nw.html) how to integrate this in the code
         - Palinstrophy seems to be the most important one
         - Maybe also consider numerical dissipation in section 5.4 from the paper
-    - [ ] Read up on `&methodlist`, maybe make an overview below
+        - [ ] Last thing to be completed: visualisation using yt
+    - [x] Read up on `&methodlist`, maybe make an overview below
+    - [ ] Set AMR to vorticity
 - [ ] Run compressible cases of the simulations
+    - [ ] Investigate different numerical methods
+    - [ ] Investigate different physical parameters
+        - [ ] Reynold's number
+        - [ ] Mach number
+        - [ ] Initial vorticity thickness
+        - [ ] Initial velocity amplitude
 - [ ] Make a presentation (for 9 / 16 December)
 
 
