@@ -4,7 +4,7 @@ module mod_usr
 
   implicit none
 
-  integer :: omega_, grad_omega_
+  integer :: omega_, grad_omega_x_, grad_omega_y_
 contains
 
   !! Some AMRVAC bookkeeping
@@ -16,8 +16,9 @@ contains
     call set_coordinate_system('Cartesian')
     call hd_activate()
 
-    omega_      = var_set_extravar("omega", "omega")
-    grad_omega_ = var_set_extravar("grad_omega", "grad_omega")
+    omega_        = var_set_extravar("omega", "omega")
+    grad_omega_x_ = var_set_extravar("grad_omega_x_", "grad_omega_x_")
+    grad_omega_y_ = var_set_extravar("grad_omega_y_", "grad_omega_y_")
   end subroutine usr_init
 
   !! Setting the initial condition
@@ -104,7 +105,7 @@ contains
     double precision, intent(inout) :: w(ixI^S,nw)
 
     double precision :: drho(ixI^S), vrot(ixI^S), tmp(ixI^S)
-    double precision :: wlocal(ixI^S,1:nw), domega(ixI^S)
+    double precision :: wlocal(ixI^S,1:nw), domega_x(ixI^S), domega_y(ixI^S)
     integer          :: idims
 
     ! Make a copy for local computations
@@ -133,9 +134,11 @@ contains
     ! ======================
     ! Output grad(vorticity)
     ! ======================
-    tmp(ixI^S) = vrot(ixI^S)
-    call gradient(tmp, ixI^L, ixO^L, idims, domega)
-    w(ixO^S, grad_omega_) = domega(ixO^S)
+    tmp(ixI^S) = w(ixI^S,omega_) !vrot(ixO^S)
+    call gradient(tmp, ixI^L, ixO^L, 1, domega_x) ! x-direction
+    call gradient(tmp, ixI^L, ixO^L, 2, domega_y) ! y-direction
+    w(ixO^S, grad_omega_x_) = domega_x(ixO^S)
+    w(ixO^S, grad_omega_y_) = domega_y(ixO^S)
 
   end subroutine set_output_vars 
 
