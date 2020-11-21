@@ -26,7 +26,7 @@ contains
     omega_        = var_set_extravar("omega", "omega")
     grad_omega_x_ = var_set_extravar("grad_omega_x_", "grad_omega_x_")
     grad_omega_y_ = var_set_extravar("grad_omega_y_", "grad_omega_y_")
-    grad_omega_y_ = var_set_extravar("mach_", "mach_")
+    mach_ = var_set_extravar("mach_", "mach_")
   end subroutine usr_init
 
   !> Read this module's parameters from a file
