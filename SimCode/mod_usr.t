@@ -1,10 +1,12 @@
+!> See http://amrvac.org/mod__usr__methods_8t_source.html for an overview
+!> of user-definable methods.
 module mod_usr
   use mod_hd
   use mod_viscosity
 
   implicit none
 
-  integer :: omega_, grad_omega_x_, grad_omega_y_
+  integer :: omega_, grad_omega(2)
 contains
 
   !! Some AMRVAC bookkeeping
@@ -12,13 +14,14 @@ contains
     usr_init_one_grid => kh_init
     usr_special_bc    => kh_boundaries
     usr_modify_output => set_output_vars
+    usr_refine_grid   => specialrefine_grid
 
     call set_coordinate_system('Cartesian')
     call hd_activate()
 
     omega_        = var_set_extravar("omega", "omega")
-    grad_omega_x_ = var_set_extravar("grad_omega_x_", "grad_omega_x_")
-    grad_omega_y_ = var_set_extravar("grad_omega_y_", "grad_omega_y_")
+    grad_omega(1) = var_set_extravar("grad_omega_x", "grad_omega_x")
+    grad_omega(2) = var_set_extravar("grad_omega_y", "grad_omega_y")
   end subroutine usr_init
 
   !! Setting the initial condition
@@ -26,7 +29,7 @@ contains
     integer, intent(in)             :: ixG^L, ix^L
     double precision, intent(in)    :: x(ixG^S,1:ndim) ! The coordinates
     double precision, intent(inout) :: w(ixG^S,1:nw)   ! The variables (rho, momentum, pressure)
-    double precision :: rho, uinf, delta0, cn          ! Problem parameters
+    double precision :: rho, uinf, delta0, cn, pint    ! Problem parameters
     logical          :: first = .true.
 
     ! ==================
@@ -34,6 +37,9 @@ contains
     ! ==================
     ! Value of the density field (which is uniform)
     rho = 1.0d0
+
+    ! Value of pressure at interface
+    pint = 2.5d0
 
     ! Some parameters from the paper
     uinf = 1.0
@@ -45,6 +51,11 @@ contains
     ! ==================
     ! Initial density field
     w(ixG^S, rho_) = rho
+
+    ! Initial pressure
+    if (hd_energy) then
+        w(ixG^S, p_) = pint
+    end if
 
     ! Initial horizontal momentum
     w(ixG^S,mom(1)) = uinf * tanh((2.0d0*x(ixG^S,2)-1.0d0)/delta0) &
@@ -64,14 +75,16 @@ contains
     double precision, intent(in) :: qt, x(ixI^S,1:ndim)
     double precision, intent(inout) :: w(ixI^S,1:nw)
     integer :: ix^D
-    double precision :: rho
+    double precision :: rho, pint
 
     ! Value for the Dirichlet boundary
-    rho = 1.0d0
+    rho  = 1.0d0
+    pint = 2.5d0
 
     select case(iB)
     case(3)
         ! Bottom boundary: Free-slip
+        ! w(ixO^S, mom(1)) = w(ixO^LIM1, ..., mom(1)) / w(ixO^LIM1, ..., mom(2))
         w(ixOmin1:ixOmax1, ixOmin2:ixOmax2, mom(1)) = &
             w(ixOmin1:ixOmax1, ixOmax2+nghostcells:ixOmax2+1:-1, mom(1)) &
             / w(ixOmin1:ixOmax1, ixOmax2+nghostcells:ixOmax2+1:-1, rho_)
@@ -80,6 +93,10 @@ contains
             / w(ixOmin1:ixOmax1, ixOmax2+nghostcells:ixOmax2+1:-1, rho_)
         ! density: wall
         w(ixO^S,rho_)=rho
+        !pressure: constant
+        if (hd_energy) then
+            w(ixO^S,p_)=pint
+        end if
     case(4)
         ! Top boundary: Free-slip
         w(ixOmin1:ixOmax1, ixOmin2:ixOmax2, mom(1)) = &
@@ -90,6 +107,10 @@ contains
             / w(ixOmin1:ixOmax1, ixOmin2-1:ixOmin2-nghostcells:-1, rho_)
         ! density: wall
         w(ixO^S,rho_)=rho
+        !pressure: constant
+        if (hd_energy) then
+            w(ixO^S,p_)=pint
+        end if
     case default
        call mpistop("Special boundary is not defined for this region")
     end select
@@ -137,9 +158,27 @@ contains
     tmp(ixI^S) = w(ixI^S,omega_) !vrot(ixO^S)
     call gradient(tmp, ixI^L, ixO^L, 1, domega_x) ! x-direction
     call gradient(tmp, ixI^L, ixO^L, 2, domega_y) ! y-direction
-    w(ixO^S, grad_omega_x_) = domega_x(ixO^S)
-    w(ixO^S, grad_omega_y_) = domega_y(ixO^S)
+    w(ixO^S, grad_omega(1)) = domega_x(ixO^S)
+    w(ixO^S, grad_omega(2)) = domega_y(ixO^S)
 
   end subroutine set_output_vars 
+
+  subroutine specialrefine_grid(igrid,level,ixG^L,ix^L,qt,w,x,refine,coarsen)
+    integer, intent(in) :: igrid, level, ixG^L, ix^L
+    double precision, intent(in) :: qt, w(ixG^S,1:nw), x(ixG^S,1:ndim)
+    integer, intent(inout) :: refine, coarsen
+    double precision:: R(ixG^S)
+
+    ! Prohibit refinement in the low vorticity parts. Coarsen if possible.
+    if (all(abs(w(ix^S, omega_)) <= 10)) then
+        refine  = -1
+        coarsen =  1
+    end if
+    ! Enforce refinement to highest level in the high vorticity parts
+    if (any(abs(w(ix^S, omega_)) > 10)) then
+        refine = 1
+    end if
+
+  end subroutine specialrefine_grid
 
 end module mod_usr

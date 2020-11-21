@@ -11,7 +11,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 data_dir = "./SimData/"
 out_dir  = "../Animations/"
 
-def animate(basename="kh_2d_", outname=None, ext=".mp4", quantity="omega"):
+def animate(basename, outname=None, ext=".mp4", quantity="omega"):
     """Produces an animated contourplot of the simulation with given name.
     
     @param basename: Base filename, given in the .par file by &filelist, base_filename.
@@ -61,6 +61,50 @@ def animate(basename="kh_2d_", outname=None, ext=".mp4", quantity="omega"):
     anim = animation.FuncAnimation(fig, update, frames=nframes, repeat=False)
     anim.save(out_dir+outname)
 
+def animate_amr(basename, outname=None, ext=".mp4", quantity="omega"):
+    """Produces an animated AMR contourplot of the simulation with given name.
+    
+    @param basename: Base filename, given in the .par file by &filelist, base_filename.
+    @param outname : Name of the movie to be produced.
+    @param ext     : Output format, depends on support of your VideoWriter (usually mp4 is OK).
+    @param quantity: The parameter to visualize (any of the primitive or conserved variables,
+        omega, grad_omega).
+    """
+    # No name given ==> produce one yourself
+    if outname is None:
+        outname = basename + ext
+    # Make sure extension is added to the filename
+    if outname[-len(ext):] != ext:
+        outname += ext
+
+    # Make figure axes and colorbar
+    fig, ax = plt.subplots()
+   
+    def update(iframe):
+        """Updating function for the MATLAB AnimationWriter."""
+        ax.clear()
+
+        # Extract the data for the current frame
+        filename = data_dir + basename + f"{iframe:04d}.dat"
+        ds = apt.load_datfile(filename)
+        time = ds.get_time()
+
+        # Plot and set figure
+        ds.amrplot(
+            quantity, fig=fig, ax=ax, draw_mesh=True, mesh_linewidth=0.5, 
+            mesh_color='white', mesh_linestyle='solid', mesh_opacity=0.8
+        )
+        ax.set_xlabel(r'$x$')
+        ax.set_ylabel(r'$y$')
+        ax.set_xlim([0.0, 1.0]) # Unit square
+        ax.set_ylim([0.0, 1.0]) # Unit square
+        ax.set_title(f"{quantity} at time {time:.2f}")
+
+    nframes = len(glob.glob1(data_dir, basename+"*.dat"))
+    anim = animation.FuncAnimation(fig, update, frames=nframes, repeat=False)
+    anim.save(out_dir+outname)
+
+
 def yt_test():
     """Alternative way of plotting via yt. Not sure how to make animations though."""
     import yt # Installation: http://amrvac.org/md_doc_yt_usage.html
@@ -82,7 +126,12 @@ def logfile_reader():
 # animate("kh_2d_fd_", "kh_2d_fd.mp4")
 # animate("kh_2d_tvd_","test.mp4")
 # yt_test()
-animate("test_dat_", "temp")
+# animate("test_dat_", "temp")
+
+# animate_amr("kh2d_bad-amr_") # 700 seconds
+# animate_amr("kh2d_good-amr_", outname="kh2d_good-amr_testlessblocks") # 1000 seconds
+# animate_amr("kh2d_good-amr_", outname="kh2d_good-amr_specialrefine") # 1370 seconds (4 levels)
+
 
 if len(sys.argv) > 1:
     animate(sys.argv[1])
