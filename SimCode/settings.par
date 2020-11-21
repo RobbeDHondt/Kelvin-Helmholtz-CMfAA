@@ -18,7 +18,7 @@
 !=====================================================
 
 &filelist
-    base_filename = 'SimData/kh2d_SETUP-NAME_'
+    base_filename = 'SimData/kh2d_'
     autoconvert   = T
     convert_type  = 'vtuBmpi'
     saveprim      = T
@@ -32,7 +32,7 @@
 /
 
 &stoplist
-    time_max = 10.0d0
+    time_max = 5.0d0
 /
 
 &methodlist
@@ -47,6 +47,7 @@
         !! "threestep"  --> {"ssprk3", "RK3_BT", "IMEX_ARS3", "IMEX_232"}
         !! "fourstep"   --> {"ssprk4", "rk4", "jameson"}
         !! "fivestep"   --> {"ssprk5"}
+    !! Different timeschemes did not really give very different results
     time_stepper = 'threestep'
     time_integrator = 'ssprk3'
 
@@ -54,15 +55,18 @@
     !! SPACE DISCRETIZATION
     !! Wiki: http://amrvac.org/md_doc_discretization.html
     !! Scheme
+        !! flux_scheme {'hll'|'hllc'|'hlld','hllcd'|'tvdlf'|'tvdmu'|'tvd'|'cd'|'fd'}
+        !! limiter {'minmod' | 'woodward' | 'superbee' | 'vanleer' | 'albada' | 'ppm' | 
+        !!          'mcbeta' | 'koren' | 'cada' | 'cada3' | 'mp5'}
+        !! typetvd {'roe' | 'yee' | 'harten' | 'sweby'}
     !! 20 = nlevelshi; the maximum number of levels in the grid refinement
-    flux_scheme = 20*'tvdlf'
-    limiter     = 20*'woodward'
-    typetvd     = 'roe'
+    flux_scheme = 20*'hll'      ! Point 7 
+    limiter     = 20*'woodward' ! Point 6 
+    typetvd     = 'roe'         ! Point 7
 
     !! No idea what it does
     !! options: {"default", "roe", "arithmetic"}
-    !typeaverage = 'arithmetic'
-
+    !typeaverage = 'arithmetic' ! when using TVDMU (otherwise error)
     !dimsplit    = T
     !typepred1 should not really be set
 /
@@ -80,11 +84,11 @@
 &meshlist
     !! ========
     !! AMR LIST
-    refine_max_level = 4
-    block_nx1        = 16
-    block_nx2        = 16
-    domain_nx1       = 64
-    domain_nx2       = 64
+    refine_max_level = 1  ! Point 8
+    block_nx1        = 64
+    block_nx2        = 64
+    domain_nx1       = 256 ! Point 5
+    domain_nx2       = 256
 
     !! Use Lohner's scheme
     !! | val | effect |
@@ -140,7 +144,7 @@
 ! So to obtain the paper's Reynolds numbers:
 ! Re = 100     =>     vc_mu = 3.57d-4
 ! Re = 1000    =>     vc_mu = 3.57d-5
-! Re = 10 000  =>     vc_mu = 3.57d-6 <-> 3.57d-8?
+! Re = 10 000  =>     vc_mu = 3.57d-6
 !=============================================================
 
 &vc_list

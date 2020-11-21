@@ -1,0 +1,46 @@
+! This is a skeleton parameter file, to be used for the remaining simulations.
+! Include this with the simulations you run. To use it, do:
+!$ mpirun -np 4 ./amrvac -i settings.par schemes.par
+! Any settings that are both in this file and in settings.par will be overridden
+! by the settings in this file. (except base_filename, it is appended)
+
+
+! Point 5: (Judith)  Different meshes
+! Point 6: (Marie)   Limiter
+! Point 7: (Robbe)   Spatial discretization 
+! Point 8:           Influence of AMR
+! Extra  : (Daniela) Physical setups
+
+
+! Always add this
+&filelist
+    base_filename = ... 'SETUP_NAME_'
+/
+
+! Add this when you want to compare discretization methods
+&methodlist
+    ! Point 7
+    flux_scheme = ...
+    typetvd     = ...
+
+    ! Point 6
+    limiter     = ...
+/
+
+! Add this when you want AMR / different spatial resolution
+&meshlist
+    ! Point 5
+    domain_nx1 = ...
+    domain_nx2 = ...
+
+    ! Point 8
+    refine_max_level = ... (4/5)
+/
+
+! Add this to run experiments with different physical setups
+&usr_list
+    d0 = ...
+    Re = ...
+    Ma = ...
+    u_inf = ...
+/
