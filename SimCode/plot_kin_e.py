@@ -4,7 +4,7 @@ from yt.funcs import mylog as ytlog
 import matplotlib.pyplot as plt
 import numpy as np
 import glob # regex
-#import amrvac_pytools as apt
+import amrvac_pytools as apt
 
 data_dir = "../Test FD/"
 basename = "kh_2d_fd(2)"
@@ -53,4 +53,6 @@ def plot_kin_e():
 
 if __name__ == '__main__':
     # test plot_kin_e()
-    plot_kin_e()
+    #plot_kin_e()
+    print('main accessed')
+
