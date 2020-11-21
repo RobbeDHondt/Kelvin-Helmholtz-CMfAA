@@ -50,9 +50,20 @@ mpirun -np 4 ./amrvac -i test.par
 
 ## MPI-AMRVAC notes
 ### [Setting parameters](http://amrvac.org/md_doc_par.html)
+Most of the notes about this can be found in `settings.par`.
+
 ### [Numerical methods](http://amrvac.org/md_doc_methods.html)
+Maybe also put the notes from this section in `settings.par`? (similar to time discretization)
+
 ### [Slope limiters](http://amrvac.org/md_doc_limiter.html)
 
+### [Adaptive Mesh Refinement](http://amrvac.org/md_doc_amrstructure.html)
+- Module `errest`
+    1. Quantify local error in each gridpoint of each grid block
+    2. If any point has an error exceeding `refine_threshold(l)`, the block is refined
+    3. If all points have an error below `derefine_ratio(l)*refine_threshold(l)`, the block is coarsened
+- For possible values of `refine_threshold`, see our `settings.par`
+- Formula for the Lohner prescription is also given here.
 
 ## Reference paper notes
 Title: [*On reference solutions and the sensitivity of the 2D Kelvin-Helmholtz instability problem*](./schroeder2019reference.pdf)

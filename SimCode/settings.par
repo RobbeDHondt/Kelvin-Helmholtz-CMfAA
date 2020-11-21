@@ -11,9 +11,14 @@
 !   `&stoplist, time_max=14.3`, but this does not seem to match (of course,
 !   this might be because of the scheme that was used).
 !=====================================================
+! How to change to the incompressible case:
+! &boundlist : change 4 to 3
+! &hd_list   : change hd_energy to F
+! That's all (other changes happen automagically)
+!=====================================================
 
 &filelist
-    base_filename = 'SimData/kh2d_SETUP-NAME_'
+    base_filename = 'SimData/kh2d_'
     autoconvert   = T
     convert_type  = 'vtuBmpi'
     saveprim      = T
@@ -27,7 +32,7 @@
 /
 
 &stoplist
-    time_max = 20.0d0
+    time_max = 5.0d0
 /
 
 &methodlist
@@ -42,6 +47,7 @@
         !! "threestep"  --> {"ssprk3", "RK3_BT", "IMEX_ARS3", "IMEX_232"}
         !! "fourstep"   --> {"ssprk4", "rk4", "jameson"}
         !! "fivestep"   --> {"ssprk5"}
+    !! Different timeschemes did not really give very different results
     time_stepper = 'threestep'
     time_integrator = 'ssprk3'
 
@@ -49,39 +55,65 @@
     !! SPACE DISCRETIZATION
     !! Wiki: http://amrvac.org/md_doc_discretization.html
     !! Scheme
-    flux_scheme = 20*'hll'
-    dimsplit    = T
-    !typepred1 should not really be set
+        !! flux_scheme {'hll'|'hllc'|'hlld','hllcd'|'tvdlf'|'tvdmu'|'tvd'|'cd'|'fd'}
+        !! limiter {'minmod' | 'woodward' | 'superbee' | 'vanleer' | 'albada' | 'ppm' | 
+        !!          'mcbeta' | 'koren' | 'cada' | 'cada3' | 'mp5'}
+        !! typetvd {'roe' | 'yee' | 'harten' | 'sweby'}
     !! 20 = nlevelshi; the maximum number of levels in the grid refinement
-    limiter     = 20*'woodward'
-    typetvd     = 'roe'
+    flux_scheme = 20*'hll'      ! Point 7 
+    limiter     = 20*'woodward' ! Point 6 
+    typetvd     = 'roe'         ! Point 7
+
     !! No idea what it does
     !! options: {"default", "roe", "arithmetic"}
-    !typeaverage = 'arithmetic'
+    !typeaverage = 'arithmetic' ! when using TVDMU (otherwise error)
+    !dimsplit    = T
+    !typepred1 should not really be set
 /
 
 &boundlist
-    !! 3 variables: (rho,m1,m2)
+    !! 4 variables in this order: (rho,m1,m2,p)
     !! Left and right: periodic boundaries
-    typeboundary_min1 = 3*'periodic'
-    typeboundary_max1 = 3*'periodic'
+    typeboundary_min1 = 4*'periodic'
+    typeboundary_max1 = 4*'periodic'
     !! Bottom and top: free-slip boundaries
-    typeboundary_min2 = 3*'special'
-    typeboundary_max2 = 3*'special'
+    typeboundary_min2 = 4*'special'
+    typeboundary_max2 = 4*'special'
 /
 
 &meshlist
-    !! Adaptive mesh refinement list
-    refine_max_level = 3
-    block_nx1        = 16
-    block_nx2        = 16
-    domain_nx1       = 64
-    domain_nx2       = 64
-    !refine_threshold = ...
-    !derefine_ratio   = ...
-    !w_refine_weight  = ...
+    !! ========
+    !! AMR LIST
+    refine_max_level = 1  ! Point 8
+    block_nx1        = 64
+    block_nx2        = 64
+    domain_nx1       = 256 ! Point 5
+    domain_nx2       = 256
+
+    !! Use Lohner's scheme
+    !! | val | effect |
+    !! | --- | --- |
+    !! | 0   | Only user-defined criteria (specialrefine_grid) |
+    !! | 1   | Compare previous time level with present values |
+    !! | 2   | Lohner's original scheme (discretized weighted second derivative) | 
+    !! | 3   | Adapted version of the original Lohner scheme |
+    refine_criterion = 0
+
+    !! Weights for the variables, determining their role in the adaptive error estimation.
+    !! In order, the (nw+1) weights correspond to:
+    !!                   rho,    v1,    v2,     p, omega, grad_omega, usr_var_for_errest
+    !w_refine_weight  = 0.0d0, 0.0d0, 0.0d0, 0.0d0, 1.0d0, 0.0d0     , 0.0d0
+    !! Alternatively: (but this won't throw an error when pressure is added/removed)
+    !w_refine_weight(4) = 1.0d0
+
+    !! Problem dependent threshold in [0,1] (default: 0.1 everywhere) (smaller = more refinement)
+    !refine_threshold = 20*1.0d0
+
+    !! When to coarsen the grid (default 1.0d0/8.0d0 is usually good) (bigger = more coarsening)
+    !derefine_ratio = 20*0.875d0
     
-    !! Size of the physical domain (unit square)
+    !! ===============
+    !! PHYSICAL DOMAIN
     xprobmin1 = 0.0d0
     xprobmax1 = 1.0d0
     xprobmin2 = 0.0d0
@@ -96,10 +128,10 @@
 /
 
 &hd_list
-    hd_energy    = F
+    hd_energy    = T
     hd_viscosity = T
     ! Adiabatic index => guess this is only necessary when solved for energy as well
-!    hd_gamma	 = 1.6666666667d0
+    hd_gamma     = 1.6666666667d0 ! = default value, doesn't really matter if we set this
 /
 
 !=============================================================
@@ -116,5 +148,5 @@
 !=============================================================
 
 &vc_list
-   vc_mu        = 3.57d-6
+   vc_mu        = 3.57d-5
 /
