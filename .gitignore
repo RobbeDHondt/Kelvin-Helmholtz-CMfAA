@@ -9,6 +9,7 @@ settings_m.par
 mod_usr.f
 amrvac
 amrvac.exe
+*.stackdump
 makefile
 *.mod
 *.log
