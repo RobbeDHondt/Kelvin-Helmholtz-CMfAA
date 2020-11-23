@@ -6,7 +6,7 @@ module mod_usr
 
   implicit none
 
-  integer :: omega_, grad_omega_x_, grad_omega_y_, mach_
+  integer :: omega_, grad_omega(2), mach_
   double precision :: Re, Ma, p0, rho_0, d0, u_inf
 
 contains
@@ -89,7 +89,7 @@ contains
     !rho = 1.0d0
 
     ! Value of pressure at interface
-    pint = 2.5d0
+    !pint = 2.5d0
 
     ! Some parameters from the paper
     !uinf = 1.0
@@ -104,7 +104,7 @@ contains
 
     ! Initial pressure
     if (hd_energy) then
-        w(ixG^S, p_) = pint
+        w(ixG^S, p_) = p0
     end if
 
     ! Initial horizontal momentum
@@ -115,12 +115,6 @@ contains
     ! Initial vertical momentum
     w(ixG^S,mom(2)) = cn * u_inf * exp(-((x(ixG^S,2)-0.5)/d0)**2.0d0) &
         * (8.0d0*dpi*sin(8.0d0*dpi*x(ixG^S,1)) + 20.0d0*dpi*sin(20.0d0*dpi*x(ixG^S,1)))
-    
-    if (hd_energy) then
-       ! Initial pressure
-       w(ixG^S,p_) = p0
-    end if
-    
 
     call hd_to_conserved(ixG^L,ix^L,w,x)
   end subroutine kh_init
