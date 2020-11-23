@@ -11,7 +11,7 @@
 !   `&stoplist, time_max=14.3`, but this does not seem to match (of course,
 !   this might be because of the scheme that was used).
 !=====================================================
-! How to change to the incompressible case:
+! How to change to the incompressible case: INCORRECT
 ! &boundlist : change 4 to 3
 ! &hd_list   : change hd_energy to F
 ! That's all (other changes happen automagically)
@@ -60,7 +60,7 @@
         !!          'mcbeta' | 'koren' | 'cada' | 'cada3' | 'mp5'}
         !! typetvd {'roe' | 'yee' | 'harten' | 'sweby'}
     !! 20 = nlevelshi; the maximum number of levels in the grid refinement
-    flux_scheme = 20*'hll'      ! Point 7 
+    flux_scheme = 20*'tvdlf'      ! Point 7 
     limiter     = 20*'woodward' ! Point 6 
     typetvd     = 'roe'         ! Point 7
 
