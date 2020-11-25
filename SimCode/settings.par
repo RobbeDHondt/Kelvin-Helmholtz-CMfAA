@@ -189,6 +189,6 @@
 &usr_list
     d0    = 0.0357d0
     Re    = 1.0d4
-    Ma    = 0.8d0
+    Ma    = 0.5d0
     u_inf = 1.0d0
 /  
