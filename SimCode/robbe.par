@@ -1,0 +1,48 @@
+! ==============================================================================
+! Compare the combination of a particular multi-step timestepper (e.g. fourstep)
+! when combined with a particular limiter in the reconstruction but for varying 
+! spatial discretization (tvdlf to hll to hllc). 
+! Perhaps afterwards try a full Roe-solver based scheme (then use onestep and 
+! combine with tvd). Know how it handles knowledge of the solution to the 
+! Riemann problem.
+! ==============================================================================
+! Visualizing TVD sims: 
+! $ python visualize.py kh2d_robbe_tvd_..._
+! $ vlc --no-one-instance NAME1.mp4 & vlc --no-one-instance NAME2.mp4 & ...
+
+&filelist
+    base_filename = 'robbe_tvd_yee_'
+/
+
+&methodlist
+    !! =============
+    !! Non-TVD tests
+    ! flux_scheme = 20*'hllc'
+    ! typetvd     = 'roe'
+
+    !! =========
+    !! TVD tests
+    flux_scheme = 20*'tvd'
+    typetvd = 'yee'        ! I'd try {roe, yee, harten, sweby}
+    typeentropy = 'powell' ! I'd keep it at this default.
+
+    ! The following are practically required for TVD.
+    time_stepper = 'onestep'
+    time_integrator = 'Forward_Euler'
+    dimsplit = T
+    typedimsplit = 'xyyx' ! I'd keep it at this default.
+    
+/
+
+! Timings (ran on 6 processors)
+
+! | flux_scheme | typetvd | Elapsed time |
+! | ----------- | ------- | ------------ |
+! | tvdlf       | roe     | 467.594      |
+! | hll         | roe     | 537.420      |
+! | hllc        | roe     | 783.543      |
+
+! | tvd         | roe     | 296.061      |
+! | tvd         | yee     | 286.160      |
+! | tvd         | harten  | 285.608      |
+! | tvd         | sweby   | 289.904      |

@@ -121,8 +121,6 @@ def quantities(basename):
         time[iframe] = ds.get_time()
         enstrophy[iframe] = 1/2 * np.linalg.norm(omega)**2
 
-    print(enstrophy)
-
     # ======
     # Saving (doesn't seem to be necessary, loads very fast when regridded)
     # np.save(data_dir + basename + "time.npy", time)
@@ -130,10 +128,10 @@ def quantities(basename):
 
     # ========
     # Plotting
-    plt.semilogy(time, enstrophy)
-    plt.xlabel("Time")
-    plt.ylabel("Enstrophy")
-    plt.show()
+    # plt.plot(time, enstrophy)
+    # plt.xlabel("Time")
+    # plt.ylabel("Enstrophy")
+    # plt.show()
     return time, enstrophy
 
 def yt_test():
@@ -156,20 +154,38 @@ def logfile_reader():
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         # Read datfile basename from commandline
-        animate(sys.argv[1])
+        name = sys.argv[1]
+        animate(name)
+        # animate(name, outname="rho_"+name, quantity="rho")
     else:
-        # animate("kh_2d_tvdmu_", "kh_2d_tvdmu.mp4")
-        # animate("kh_2d_fd_", "kh_2d_fd.mp4")
-        # animate("kh_2d_tvd_","test.mp4")
-        # yt_test()
-        # animate("test_dat_", "temp")
-
+        # # AMR experiments
         # animate_amr("kh2d_bad-amr_") # 700 seconds
         # animate_amr("kh2d_good-amr_", outname="kh2d_good-amr_testlessblocks") # 1000 seconds
         # animate_amr("kh2d_good-amr_", outname="kh2d_good-amr_specialrefine") # 1370 seconds (4 levels)
-
         # animate_amr("kh2d_SETUP-NAME_", "kh2d_compressible_amr") # 1564 seconds (4 levels)
-        # animate("kh2d_SETUP-NAME_", "kh2d_compressible")
         
+        # # Plotting experiments
         # quantities("kh2d_SETUP-NAME_")
+
+        # Final experiments
+        base = "kh2d_robbe_"
+        # animate( base+"tvdlf_roe_" )
+        # animate( base+"hll_roe_"   )
+        # animate( base+"hllc_roe_"  )
+        # animate( base+"tvdlf_roe_", outname="rho_"+base+"tvdlf_roe_", quantity="rho" )
+        # animate( base+"hll_roe_"  , outname="rho_"+base+"hll_roe_"  , quantity="rho" )
+        # animate( base+"hllc_roe_" , outname="rho_"+base+"hllc_roe_" , quantity="rho" )
+
+        # Better do this in an interactive window?
+        methodList = ["tvdlf_roe_","hll_roe_","hllc_roe_","tvd_roe_",
+                "tvd_yee_","tvd_harten_","tvd_sweby_"]
+        for sim in methodList:
+            time, enstrophy = quantities(base+sim)
+            plt.plot(time, enstrophy)
+
+        plt.legend(methodList)
+        plt.xlabel(r"Time $t$")
+        plt.ylabel("Enstrophy")
+        plt.savefig("../Animations/7-robbe/enstrophy.png")
+        plt.show()
         pass
