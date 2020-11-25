@@ -3,6 +3,7 @@ settings_m.par
 
 # PYTHON
 *.npy
+**/__pycache__/
 
 # FORTRAN
 ## `mod_usr.t` after processing with VACPP
