@@ -53,7 +53,7 @@ mpirun -np 4 ./amrvac -i test.par
 Most of the notes about this can be found in `settings.par`.
 
 ### [Numerical methods](http://amrvac.org/md_doc_methods.html)
-Maybe also put the notes from this section in `settings.par`? (similar to time discretization)
+DONE (see `settings.par`)
 
 ### [Slope limiters](http://amrvac.org/md_doc_limiter.html)
 

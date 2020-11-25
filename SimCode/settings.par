@@ -11,7 +11,7 @@
 !   `&stoplist, time_max=14.3`, but this does not seem to match (of course,
 !   this might be because of the scheme that was used).
 !=====================================================
-! How to change to the incompressible case: INCORRECT
+! How to turn off the energy equation:
 ! &boundlist : change 4 to 3
 ! &hd_list   : change hd_energy to F
 ! That's all (other changes happen automagically)
@@ -54,20 +54,62 @@
     !! ====================
     !! SPACE DISCRETIZATION
     !! Wiki: http://amrvac.org/md_doc_discretization.html
-    !! Scheme
-        !! flux_scheme {'hll'|'hllc'|'hlld','hllcd'|'tvdlf'|'tvdmu'|'tvd'|'cd'|'fd'}
-        !! limiter {'minmod' | 'woodward' | 'superbee' | 'vanleer' | 'albada' | 'ppm' | 
-        !!          'mcbeta' | 'koren' | 'cada' | 'cada3' | 'mp5'}
-        !! typetvd {'roe' | 'yee' | 'harten' | 'sweby'}
+    !! flux_scheme -- Wiki: http://amrvac.org/md_doc_methods.html
+        !! "hll"  : Approximate Riemann solver, most diffusive
+        !! "hllc" : Approximate Riemann solver, designed for HD physics
+        !! "hlld" : Irrelevant (MHD)
+        !! "hllcd": ?? mix of HLLC and TVDLF (latter is used in user-controlled region around
+        !!          a point where there is a sign change in flux)
+        !! "tvdlf":
+        !!      - Diffusive => robust (but might be too diffusive)
+        !!      - No Riemann solver thus minimal implementation cost, also the fastest
+        !!      - courantpar=0.8 recommended
+        !! "tvdmu":
+        !!      - 2-step method combining predictor-upwinding from TVDLF and Riemann from TVD 
+        !!      - Roe solver, maximal wave info used, but limited to second-order accuracy
+        !!      - But: limited to second-order accuracy and not the most efficient metho
+        !!      - courantpar=0.8 recommended, can do dimsplit=T or dimsplit=F
+        !!      - Linear Riemann solvers might produce non-physical solutions, set typeentropy
+        !!        ("yee" => also set entropycoef, "harten" or "powell") to eliminate this.
+        !! "tvd"  :
+        !!      - One of the most accurate and efficient schemes
+        !!      - Comes in different flavors, default is typetvd='roe'
+        !!      - Same limiters as for TVDLF and TVDMU but now applied to characteristic waves
+        !!      - courantpar=0.8 recommended, only dimsplit=T
+        !!      - typeentropy: same remark as for TVDMU
+        !! "cd"   : Central differences, only really useful for testing purposes
+        !! "fd"   : High order FDM, global Lax-Friedrich flux splitting, not usable with ppm
+    !! typeentropy for TVD / TVDMU (for shocks)
+        !! "yee"   : Minimum characteristic speed for each wave can be set in entropycoef
+        !! "harten": 
+        !! "powell": Most powerful entropy fix
+    !! typetvd 
+        !! "roe"   : Fastest of the 4 upwind types
+        !! "yee"   :
+        !! "harten":
+        !! "sweby" :
+
+    !! limiter -- Wiki: http://amrvac.org/md_doc_limiter.html 
+    !! (TODO: add {'superbee' | 'vanleer' | 'albada' | 'mcbeta' | 'cada'})
+    !! (TODO: there are actually even more methods on the wiki page linked above)
+        !! limiter  | order | notes
+        !! -------- | ----- | -----
+        !! minmod   |   2   | TVD, rather diffusive, but extremely robust
+        !! woodward |   2   | TVD, sharper
+        !! koren    |   3   | distinguishes left/right interpolations, even better than woodward
+        !! ppm      |   3   | 4 ghost cells, piecewise parabolic reconstruction
+        !! cada3    |   3   | 2 ghost cells, also known as LIMO3
+        !! mp5      |   5   | TODO
+
     !! 20 = nlevelshi; the maximum number of levels in the grid refinement
     flux_scheme = 20*'tvdlf'      ! Point 7 
     limiter     = 20*'woodward' ! Point 6 
     typetvd     = 'roe'         ! Point 7
 
-    !! No idea what it does
-    !! options: {"default", "roe", "arithmetic"}
+    !! typeaverage (only for adiabatic hd): type of average used in Roe solver ("roe"/"arithmetic")
     !typeaverage = 'arithmetic' ! when using TVDMU (otherwise error)
-    !dimsplit    = T
+
+    !dimsplit    = T ! Only for TVD
     !typepred1 should not really be set
 /
 
