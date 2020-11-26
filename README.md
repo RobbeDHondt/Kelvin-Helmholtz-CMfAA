@@ -27,7 +27,7 @@ mpirun -np 4 ./amrvac -i test.par
 
 
 ## TODO
-- [ ] Reproduce some figures from the paper (assuming incompressible is easier than compressible HAH prank)
+- [ ] Make a base simulation setup
     - [x] Translate the problem statement in [2.1](#2.1-Problem-statement) into a `.par` parameter file (see the base file, [settings.par](./SimCode/settings.par))
     - [x] Translate initial & boundary conditions into the `mod_usr.t` file (see the base file, [mod_usr.t](./SimCode/mod_usr.t))
     - [x] We also need to do some extra stuff with the vorticity, might want to check `amrvac/tests/hd/Karman_Vortex_2D` (there, the vorticity is also already being calculated, so might also be interesting for the following point)
@@ -37,8 +37,8 @@ mpirun -np 4 ./amrvac -i test.par
         - Maybe also consider numerical dissipation in section 5.4 from the paper
         - [ ] Last thing to be completed: visualisation using yt
     - [x] Read up on `&methodlist`, maybe make an overview below
-    - [ ] Set AMR to vorticity
-- [ ] Run compressible cases of the simulations
+    - [x] Set AMR to vorticity
+- [ ] Run some interesting (compressible) simulations
     - [ ] Investigate different numerical methods
     - [ ] Investigate different physical parameters
         - [ ] Reynold's number
@@ -49,21 +49,16 @@ mpirun -np 4 ./amrvac -i test.par
 
 
 ## MPI-AMRVAC notes
-### [Setting parameters](http://amrvac.org/md_doc_par.html)
-Most of the notes about this can be found in `settings.par`.
-
-### [Numerical methods](http://amrvac.org/md_doc_methods.html)
-DONE (see `settings.par`)
-
-### [Slope limiters](http://amrvac.org/md_doc_limiter.html)
-
-### [Adaptive Mesh Refinement](http://amrvac.org/md_doc_amrstructure.html)
-- Module `errest`
-    1. Quantify local error in each gridpoint of each grid block
-    2. If any point has an error exceeding `refine_threshold(l)`, the block is refined
-    3. If all points have an error below `derefine_ratio(l)*refine_threshold(l)`, the block is coarsened
-- For possible values of `refine_threshold`, see our `settings.par`
-- Formula for the Lohner prescription is also given here.
+- [Setting parameters](http://amrvac.org/md_doc_par.html): Most of the notes about this can be found in `settings.par`.
+- [Numerical methods](http://amrvac.org/md_doc_methods.html): DONE (see `settings.par`)
+- [Slope limiters](http://amrvac.org/md_doc_limiter.html)
+- [Adaptive Mesh Refinement](http://amrvac.org/md_doc_amrstructure.html)
+    - Module `errest`
+        1. Quantify local error in each gridpoint of each grid block
+        2. If any point has an error exceeding `refine_threshold(l)`, the block is refined
+        3. If all points have an error below `derefine_ratio(l)*refine_threshold(l)`, the block is coarsened
+    - For possible values of `refine_threshold`, see our `settings.par`
+    - Formula for the Lohner prescription is also given here.
 
 ## Reference paper notes
 Title: [*On reference solutions and the sensitivity of the 2D Kelvin-Helmholtz instability problem*](./schroeder2019reference.pdf)
