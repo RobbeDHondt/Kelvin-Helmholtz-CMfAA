@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-data_dir = "./SimData/"
+data_dir = "./SimData/Mach0.5/"
 out_dir  = "../Animations/"
 
 def animate(basename, outname=None, ext=".mp4", quantity="omega"):
@@ -104,22 +104,31 @@ def animate_amr(basename, outname=None, ext=".mp4", quantity="omega"):
     anim = animation.FuncAnimation(fig, update, frames=nframes, repeat=False)
     anim.save(out_dir+outname)
 
-def quantities(basename):
+def quantities(basename,dirname):
     # =========
     # Computing
-    nframes = len(glob.glob1(data_dir, basename+"*.dat"))
+    print(dirname)
+    nframes = len(glob.glob1(dirname, basename+"*.dat"))
     time      = np.zeros(nframes)
     enstrophy = np.zeros(nframes)
+    kinetic_energy = np.zeros(nframes)
     for iframe in range(nframes):
         # Load the data
-        filename = data_dir + basename + f"{iframe:04d}.dat"
+        filename = dirname + basename + f"{iframe:04d}.dat"
+        print(filename)
         ds = apt.load_datfile(filename)
-        ad = ds.load_all_data(regriddir=data_dir+"regridded_data/")
+        ad = ds.load_all_data(regriddir=dirname+"regridded_data/")
         omega = ad['omega']
+        velocity_x = ad['v1']
+        velocity_y = ad['v2']
+        rho = ad['rho']
+        kin_energy_density = rho * (velocity_x**2 + velocity_y**2) / 2
+        Dx = 1/np.size(omega,1)
 
         # Compute quantities
         time[iframe] = ds.get_time()
-        enstrophy[iframe] = 1/2 * np.linalg.norm(omega)**2
+        enstrophy[iframe] = 1/2 * Dx * np.linalg.norm(omega)**2
+        kinetic_energy[iframe] = Dx * np.linalg.norm(kin_energy_density)**2
 
     # ======
     # Saving (doesn't seem to be necessary, loads very fast when regridded)
@@ -132,7 +141,7 @@ def quantities(basename):
     # plt.xlabel("Time")
     # plt.ylabel("Enstrophy")
     # plt.show()
-    return time, enstrophy
+    return time, enstrophy, kinetic_energy
 
 def yt_test():
     """Alternative way of plotting via yt. Not sure how to make animations though."""
@@ -168,7 +177,8 @@ if __name__ == "__main__":
         # quantities("kh2d_SETUP-NAME_")
 
         # Final experiments
-        base = "kh2d_robbe_"
+        directories = ["Cada3","Koren","Minmod","Ppm","Superbee","Vanleer","Woodward"]
+        base = "kh2d_"
         # animate( base+"tvdlf_roe_" )
         # animate( base+"hll_roe_"   )
         # animate( base+"hllc_roe_"  )
@@ -176,16 +186,21 @@ if __name__ == "__main__":
         # animate( base+"hll_roe_"  , outname="rho_"+base+"hll_roe_"  , quantity="rho" )
         # animate( base+"hllc_roe_" , outname="rho_"+base+"hllc_roe_" , quantity="rho" )
 
+        ax1, ax2 = plt.figure().subplots(1,2)
+
         # Better do this in an interactive window?
-        methodList = ["tvdlf_roe_","hll_roe_","hllc_roe_","tvd_roe_",
-                "tvd_yee_","tvd_harten_","tvd_sweby_"]
-        for sim in methodList:
-            time, enstrophy = quantities(base+sim)
-            plt.plot(time, enstrophy)
+        methodList = ["cada3_","koren_","minmod_","ppm_","superbee_","vanleer_","woodward_"]
+        for i in range(1,len(methodList)):
+            #print(directories[i]+base+methodList[i])
+            time, enstrophy, kinetic_energy = quantities(base+methodList[i],data_dir+directories[i]+"/")
+            ax1.plot(time, enstrophy)
+            ax2.plot(time,kinetic_energy)
 
         plt.legend(methodList)
-        plt.xlabel(r"Time $t$")
-        plt.ylabel("Enstrophy")
-        plt.savefig("../Animations/7-robbe/enstrophy.png")
+        ax1.set_xlabel(r"Time $t$")
+        ax2.set_xlabel(r"Time $t$")
+        ax1.set_ylabel("Enstrophy")
+        ax2.set_ylabel("Kinetic Energy")
+        plt.savefig("../Animations/Slope-Limiters/Mach0.5/enstrophy-and-kinetic-energy.png")
         plt.show()
         pass
