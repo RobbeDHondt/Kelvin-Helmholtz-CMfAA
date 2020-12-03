@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-data_dir = "./SimData/Mach0.5/"
+data_dir = "./SimData/"
 out_dir  = "../Animations/"
 
 def animate(basename, outname=None, ext=".mp4", quantity="omega"):
@@ -104,7 +104,7 @@ def animate_amr(basename, outname=None, ext=".mp4", quantity="omega"):
     anim = animation.FuncAnimation(fig, update, frames=nframes, repeat=False)
     anim.save(out_dir+outname)
 
-def quantities(basename,dirname):
+def quantities(basename, dirname=data_dir):
     # =========
     # Computing
     print(dirname)
@@ -143,22 +143,6 @@ def quantities(basename,dirname):
     # plt.show()
     return time, enstrophy, kinetic_energy
 
-def yt_test():
-    """Alternative way of plotting via yt. Not sure how to make animations though."""
-    import yt # Installation: http://amrvac.org/md_doc_yt_usage.html
-    ds = yt.load("SimData/kh_2d_0015.dat")
-    pt = yt.plot_2d(ds, 'rho')
-    pt.save("test")
-
-def logfile_reader():
-    """Still a work in progress."""
-    with open(data_dir + "kh_2d_fd_.log") as f:
-        head = f.readline()
-        data = []
-        for line in f:
-            data.append(line.split())
-        data = np.array(data)
-    return head, data
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -167,24 +151,62 @@ if __name__ == "__main__":
         animate(name)
         # animate(name, outname="rho_"+name, quantity="rho")
     else:
-        # # AMR experiments
-        # animate_amr("kh2d_bad-amr_") # 700 seconds
-        # animate_amr("kh2d_good-amr_", outname="kh2d_good-amr_testlessblocks") # 1000 seconds
-        # animate_amr("kh2d_good-amr_", outname="kh2d_good-amr_specialrefine") # 1370 seconds (4 levels)
-        # animate_amr("kh2d_SETUP-NAME_", "kh2d_compressible_amr") # 1564 seconds (4 levels)
-        
-        # # Plotting experiments
-        # quantities("kh2d_SETUP-NAME_")
+        # ==============
+        # ~~~~@Robbe~~~~
+        # ==============
+        robbe = False
+        if robbe:
+            # # AMR experiments
+            # animate_amr("kh2d_bad-amr_") # 700 seconds
+            # animate_amr("kh2d_good-amr_", outname="kh2d_good-amr_testlessblocks") # 1000 seconds
+            # animate_amr("kh2d_good-amr_", outname="kh2d_good-amr_specialrefine") # 1370 seconds (4 levels)
+            # animate_amr("kh2d_SETUP-NAME_", "kh2d_compressible_amr") # 1564 seconds (4 levels)
+            
+            # # Plotting experiments
+            # quantities("kh2d_SETUP-NAME_")
 
-        # Final experiments
+            # Final experiments
+            base = "kh2d_robbe_"
+            # animate( base+"tvdlf_roe_" )
+            # animate( base+"hll_roe_"   )
+            # animate( base+"hllc_roe_"  )
+            # animate( base+"tvdlf_roe_", outname="rho_"+base+"tvdlf_roe_", quantity="rho" )
+            # animate( base+"hll_roe_"  , outname="rho_"+base+"hll_roe_"  , quantity="rho" )
+            # animate( base+"hllc_roe_" , outname="rho_"+base+"hllc_roe_" , quantity="rho" )
+
+            from itertools import cycle
+            lines = ["-","--","-.",":"]
+            linecycler = cycle(lines)
+            plt.rcParams.update({'font.size': 18})
+
+            ax1, ax2 = plt.figure(figsize=(16,8)).subplots(1,2)
+            methodList = ["tvdlf_roe_","hll_roe_","hllc_roe_","tvd_roe_",
+                    "tvd_yee_","tvd_harten_","tvd_sweby_"]
+            for sim in methodList:
+                time, enstrophy, kinetic_energy = quantities(base+sim)
+                style = next(linecycler)
+                ax1.plot(time, enstrophy, style)
+                ax2.plot(time, kinetic_energy, style)
+
+            methodList = ["TVDLF (Roe)", "HLL", "HLLC", "TVD (Roe)", 
+                "TVD (Yee)", "TVD (Harten)", "TVD (Sweby)"]
+            ax1.legend(methodList)
+            ax2.legend(methodList)
+            ax1.set_xlabel(r"Time $t$")
+            ax2.set_xlabel(r"Time $t$")
+            ax1.set_ylabel("Enstrophy")
+            ax2.set_ylabel("Kinetic energy")
+            ax1.grid()
+            ax2.grid()
+            # plt.savefig("../Animations/7-robbe/enstrophy.png")
+            plt.show()
+            sys.exit()
+        
+
+        data_dir = "./SimData/Mach0.5/"
+
         directories = ["Cada3","Koren","Minmod","Ppm","Superbee","Vanleer","Woodward"]
         base = "kh2d_"
-        # animate( base+"tvdlf_roe_" )
-        # animate( base+"hll_roe_"   )
-        # animate( base+"hllc_roe_"  )
-        # animate( base+"tvdlf_roe_", outname="rho_"+base+"tvdlf_roe_", quantity="rho" )
-        # animate( base+"hll_roe_"  , outname="rho_"+base+"hll_roe_"  , quantity="rho" )
-        # animate( base+"hllc_roe_" , outname="rho_"+base+"hllc_roe_" , quantity="rho" )
 
         ax1, ax2 = plt.figure().subplots(1,2)
 

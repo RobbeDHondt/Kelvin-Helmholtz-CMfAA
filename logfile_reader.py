@@ -42,7 +42,8 @@ def main():
     plt.ylabel(r"$\log_{10}(\Delta t$)")
     plt.show()
 
-    # Analyse wavespeeds
+    # Analyse wavespeeds. Skip first step because we are still in the
+    # "slowsteps" regime then.
     dx = 1./256
     courantpar = 0.8
     Smax = courantpar * dx / data[1:,dt] # Forward Euler: dt = courantpar*dx / Smax
@@ -50,6 +51,7 @@ def main():
     plt.title("Maximal wavespeeds estimated by AMRVAC")
     plt.xlabel(r"Simulation time $t$")
     plt.ylabel(r"$S_{max}$")
+    plt.grid()
     plt.show()
 
 if __name__ == "__main__":
