@@ -164,9 +164,12 @@
 /
 
 &paramlist
+    ! If density is very small ==> resulting timestep is very small (due to high sound speed)
+    ! => if you want to set top and bot boundary velocity to twice the speed, you might need to
+    !    increase the number of slowsteps (not sure if this will fix it tho)
     slowsteps    = 10
     courantpar   = 0.8d0
-   typecourant  = 'maxsum'
+    typecourant  = 'maxsum'
 /
 
 &hd_list
